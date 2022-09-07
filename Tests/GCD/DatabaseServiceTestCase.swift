@@ -39,10 +39,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 		}
 		
 		// Then
-		database.read(
-			predicate: nil,
-			sortDescriptors: []
-		) { (result: Result<[MockEntity], Error>) in
+		database.read() { (result: Result<[MockEntity], Error>) in
 			switch result {
 			case .success(let storedObjects):
 				XCTAssertEqual(storedObjects.count, newEntities.count)
@@ -117,10 +114,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 		} completion: { _ in }
 		
 		// Then
-		database.read(
-			predicate: nil,
-			sortDescriptors: []
-		) { (result: Result<[MockEntity], Error>) in
+		database.read() { (result: Result<[MockEntity], Error>) in
 			switch result {
 			case .success(let storedObjects):
 				let object = storedObjects.first
@@ -174,10 +168,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 		}
 		
 		// Then
-		database.read(
-			predicate: nil,
-			sortDescriptors: []
-		) { (result: Result<[MockEntity], Error>) in
+		database.read() { (result: Result<[MockEntity], Error>) in
 			switch result {
 			case .success(let storedObjects):
 				let storedObjectsIDs = storedObjects.map {
@@ -216,10 +207,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 		}
 		
 		// Then
-		database.read(
-			predicate: nil,
-			sortDescriptors: []
-		) { (result: Result<[MockEntity], Error>) in
+		database.read() { (result: Result<[MockEntity], Error>) in
 			switch result {
 			case .success(let storedObjects):
 				XCTAssert(storedObjects.isEmpty)
