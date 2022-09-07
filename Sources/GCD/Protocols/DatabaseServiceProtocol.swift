@@ -6,6 +6,11 @@ protocol DatabaseServiceProtocol {
 	// MARK: - Create
 	
 	func create<Entity: Object>(
+		_ entity: Entity,
+		completion: @escaping (Result<Void, Error>) -> Void
+	)
+	
+	func create<Entity: Object>(
 		_ entities: [Entity],
 		completion: @escaping (Result<Void, Error>) -> Void
 	)
