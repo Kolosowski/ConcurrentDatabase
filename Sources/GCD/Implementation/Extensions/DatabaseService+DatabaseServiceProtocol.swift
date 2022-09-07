@@ -43,22 +43,33 @@ extension DatabaseService: DatabaseServiceProtocol {
 	}
 	
 	func update<Entity: Object>(
-		_ primaryKey: String,
-		block: @escaping (Result<Entity, Swift.Error>) -> Void
+		_ primaryKeys: [String],
+		update: @escaping ([Entity]) -> Void,
+		completion: @escaping (Result<Void, Swift.Error>) -> Void
 	) {
+		var errors: [Swift.Error] = []
 		workQueue.async {
 			do {
 				let realm = try Realm(configuration: configuration)
-				try realm.write {
-					if let entity = realm.object(ofType: Entity.self, forPrimaryKey: primaryKey) {
-						block(.success(entity))
-						realm.add(entity, update: .modified)
+				let entities = primaryKeys.compactMap { key -> Entity? in
+					if let entity = realm.object(ofType: Entity.self, forPrimaryKey: key) {
+						return entity
 					} else {
-						block(.failure(Self.Error.objectNotFound(primaryKey: primaryKey)))
+						errors.append(Self.Error.objectNotFound(primaryKey: key))
+						return nil
 					}
 				}
+				try realm.write {
+					update(entities)
+					realm.add(entities, update: .modified)
+				}
+				if errors.isEmpty {
+					completion(.success(Void()))
+				} else {
+					completion(.failure(Self.Error.fetchMultiple(errors: errors)))
+				}
 			} catch {
-				block(.failure(error))
+				completion(.failure(error))
 			}
 		}
 	}

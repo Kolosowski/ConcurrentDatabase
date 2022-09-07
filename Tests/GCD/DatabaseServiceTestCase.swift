@@ -107,15 +107,14 @@ final class DatabaseServiceTestCase: XCTestCase {
 			createExpectation.fulfill()
 		}
 		let updatedEntityValue = newEntityValue + 100
-		database.update(newEntity.id) { (result: Result<MockEntity, Error>) in
-			switch result {
-			case .success(let object):
-				object.testValue = updatedEntityValue
-			case .failure(_):
-				XCTFail()
-			}
+		database.update([newEntity.id]) { (entities: [MockEntity]) in
+			entities
+				.first {
+					$0.id == newEntity.id
+				}?
+				.testValue = updatedEntityValue
 			updateExpectation.fulfill()
-		}
+		} completion: { _ in }
 		
 		// Then
 		database.read(
@@ -138,15 +137,10 @@ final class DatabaseServiceTestCase: XCTestCase {
 	func testUpdate_notExistedEntity() {
 		let updateExpectation = XCTestExpectation(description: "update")
 		
-		database.update(UUID().uuidString) { (result: Result<MockEntity, Error>) in
-			switch result {
-			case .success:
-				XCTFail()
-			case .failure:
-				XCTAssertTrue(true)
-			}
+		database.update([UUID().uuidString]) { (entities: [MockEntity]) in
+			XCTAssert(entities.isEmpty)
 			updateExpectation.fulfill()
-		}
+		} completion: { _ in }
 		wait(for: [updateExpectation], timeout: 2)
 	}
 	

@@ -15,8 +15,9 @@ protocol DatabaseServiceProtocol {
 	)
 	
 	func update<Entity: Object>(
-		_ primaryKey: String,
-		block: @escaping (Result<Entity, Error>) -> Void
+		_ primaryKeys: [String],
+		update: @escaping ([Entity]) -> Void,
+		completion: @escaping (Result<Void, Error>) -> Void
 	)
 	
 	func delete<Entity: Object>(
