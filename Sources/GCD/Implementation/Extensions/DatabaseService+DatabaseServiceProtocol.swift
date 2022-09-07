@@ -109,7 +109,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 		}
 	}
 	
-	func deleteAll(
+	func erase(
 		completion: @escaping (Result<Void, Swift.Error>) -> Void
 	) {
 		workQueue.async {

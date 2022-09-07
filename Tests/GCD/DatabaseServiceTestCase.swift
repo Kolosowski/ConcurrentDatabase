@@ -13,7 +13,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 	// MARK: - Life Cycle
 	
 	override func tearDown() {
-		database.deleteAll { result in
+		database.erase { result in
 			if case Result.failure(_) = result {
 				XCTFail()
 			}
@@ -198,7 +198,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 		wait(for: [createExpectation, deleteExpectation, readExpectation], timeout: 2)
 	}
 	
-	func testDeleteAll() {
+	func testErase() {
 		// Given
 		let createExpectation = XCTestExpectation(description: "create")
 		let deleteExpectation = XCTestExpectation(description: "delete")
@@ -214,7 +214,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 			}
 			createExpectation.fulfill()
 		}
-		database.deleteAll { result in
+		database.erase { result in
 			if case Result.failure(_) = result {
 				XCTFail()
 			}

@@ -24,7 +24,7 @@ protocol DatabaseServiceProtocol {
 		completion: @escaping (Result<[Entity], Error>) -> Void
 	)
 	
-	func deleteAll(
+	func erase(
 		completion: @escaping (Result<Void, Error>) -> Void
 	)
 	
