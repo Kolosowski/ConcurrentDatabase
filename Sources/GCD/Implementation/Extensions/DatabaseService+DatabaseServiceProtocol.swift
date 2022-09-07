@@ -5,7 +5,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 	
 	func create<Entity: Object>(
 		_ entities: [Entity],
-		completion: @escaping (Result<Void, Error>) -> Void
+		completion: @escaping (Result<Void, Swift.Error>) -> Void
 	) {
 		workQueue.async {
 			do {
@@ -23,7 +23,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 	func read<Entity: Object>(
 		predicate: NSPredicate?,
 		sortDescriptors: [NSSortDescriptor],
-		completion: @escaping (Result<[Entity], Error>) -> Void
+		completion: @escaping (Result<[Entity], Swift.Error>) -> Void
 	) {
 		workQueue.async {
 			do {
@@ -44,7 +44,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 	
 	func update<Entity: Object>(
 		_ primaryKey: String,
-		block: @escaping (Result<Entity, Error>) -> Void
+		block: @escaping (Result<Entity, Swift.Error>) -> Void
 	) {
 		workQueue.async {
 			do {
@@ -54,7 +54,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 						block(.success(entity))
 						realm.add(entity, update: .modified)
 					} else {
-						block(.failure(NSError(domain: "Couldn't find entity with primary key \(primaryKey)", code: .zero)))
+						block(.failure(Self.Error.objectNotFound(primaryKey: primaryKey)))
 					}
 				}
 			} catch {
@@ -69,13 +69,13 @@ extension DatabaseService: DatabaseServiceProtocol {
 	 */
 	func delete<Entity: Object>(
 		_ primaryKeys: [String],
-		completion: @escaping (Result<[Entity], Error>) -> Void
+		completion: @escaping (Result<[Entity], Swift.Error>) -> Void
 	) {
 		workQueue.async {
 			do {
 				let realm = try Realm(configuration: configuration)
 				var deletedEntities: [Entity] = []
-				var errors: [Error] = []
+				var errors: [Swift.Error] = []
 				
 				primaryKeys.forEach {
 					if let entity = realm.object(ofType: Entity.self, forPrimaryKey: $0), !entity.isInvalidated {
@@ -88,7 +88,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 							errors.append(error)
 						}
 					} else {
-						errors.append(NSError(domain: "Couldn't find entity with primary key \($0)", code: .zero))
+						errors.append(Self.Error.objectNotFound(primaryKey: $0))
 					}
 				}
 				
@@ -110,7 +110,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 	}
 	
 	func deleteAll(
-		completion: @escaping (Result<Void, Error>) -> Void
+		completion: @escaping (Result<Void, Swift.Error>) -> Void
 	) {
 		workQueue.async {
 			do {
