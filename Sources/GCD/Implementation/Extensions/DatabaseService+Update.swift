@@ -1,7 +1,7 @@
 import Foundation
 import RealmSwift
 
-extension DatabaseService {
+public extension DatabaseService {
 	
 	func update<Entity: Object>(
 		_ primaryKey: String,

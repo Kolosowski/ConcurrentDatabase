@@ -1,7 +1,7 @@
 import Foundation
 import RealmSwift
 
-extension DatabaseService {
+public extension DatabaseService {
 	
 	func erase(
 		completion: @escaping (Result<Void, Swift.Error>) -> Void

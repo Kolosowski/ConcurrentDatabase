@@ -1,7 +1,7 @@
 import Foundation
 import RealmSwift
 
-extension DatabaseService {
+public extension DatabaseService {
 	
 	func create<Entity: Object>(
 		_ entity: Entity,

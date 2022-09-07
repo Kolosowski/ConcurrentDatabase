@@ -1,7 +1,7 @@
 import Foundation
 import RealmSwift
 
-extension DatabaseService {
+public extension DatabaseService {
 	
 	func read<Entity: Object>(
 		completion: @escaping (Result<[Entity], Swift.Error>) -> Void

@@ -1,7 +1,7 @@
 import Foundation
 import RealmSwift
 
-protocol DatabaseServiceProtocol {
+public protocol DatabaseServiceProtocol {
 	
 	// MARK: - Create
 	

@@ -1,6 +1,6 @@
 import Foundation
 
-extension DatabaseService {
+public extension DatabaseService {
 	
 	enum Error: Swift.Error {
 		case objectNotFound(primaryKey: String)

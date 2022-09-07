@@ -1,7 +1,7 @@
 import Foundation
 import RealmSwift
 
-extension DatabaseService {
+public extension DatabaseService {
 	
 	/**
 	 - parameter completion: Contains invalidated entity or error if it weren't deleted.
