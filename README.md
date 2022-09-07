@@ -1,3 +1,4 @@
 # ConcurrentDatabase
 
-A description of this package.
+Concurrent database implementations examples. All implementations are tests covered.
+* GCD
