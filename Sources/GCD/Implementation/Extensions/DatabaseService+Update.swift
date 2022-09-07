@@ -1,9 +1,43 @@
 import Foundation
 import RealmSwift
 
-extension DatabaseService: DatabaseServiceProtocol {
+extension DatabaseService {
 	
 	func update<Entity: Object>(
+		_ primaryKey: String,
+		update: @escaping (Entity) -> Void,
+		completion: @escaping (Result<Void, Swift.Error>) -> Void
+	) {
+		modify(
+			[primaryKey]) { (entities: [Entity]) in
+				if let entity = entities.first {
+					update(entity)
+				} else {
+					completion(.failure(Error.objectNotFound(primaryKey: primaryKey)))
+				}
+			} completion: { result in
+				completion(result)
+			}
+
+	}
+	
+	func update<Entity: Object>(
+		_ primaryKeys: [String],
+		update: @escaping ([Entity]) -> Void,
+		completion: @escaping (Result<Void, Swift.Error>) -> Void
+	) {
+		modify(
+			primaryKeys,
+			update: update,
+			completion: completion
+		)
+	}
+	
+}
+
+private extension DatabaseService {
+	
+	func modify<Entity: Object>(
 		_ primaryKeys: [String],
 		update: @escaping ([Entity]) -> Void,
 		completion: @escaping (Result<Void, Swift.Error>) -> Void

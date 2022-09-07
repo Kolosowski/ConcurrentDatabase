@@ -40,6 +40,12 @@ protocol DatabaseServiceProtocol {
 	// MARK: - Update
 	
 	func update<Entity: Object>(
+		_ primaryKey: String,
+		update: @escaping (Entity) -> Void,
+		completion: @escaping (Result<Void, Error>) -> Void
+	)
+	
+	func update<Entity: Object>(
 		_ primaryKeys: [String],
 		update: @escaping ([Entity]) -> Void,
 		completion: @escaping (Result<Void, Error>) -> Void
