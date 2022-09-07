@@ -15,14 +15,24 @@ public protocol DatabaseServiceProtocol {
 		completion: @escaping (Result<Void, Error>) -> Void
 	)
 	
-	// MARK: - Read Sequence
+	// MARK: - Read
+	
+	func read<Entity: Object>(
+		_ primaryKey: String,
+		completion: @escaping (Result<Entity, Error>) -> Void
+	)
+	
+	func read<Entity: Object>(
+		predicate: NSPredicate,
+		completion: @escaping (Result<Entity, Error>) -> Void
+	)
 	
 	func read<Entity: Object>(
 		completion: @escaping (Result<[Entity], Error>) -> Void
 	)
 	
 	func read<Entity: Object>(
-		predicate: NSPredicate?,
+		predicate: NSPredicate,
 		completion: @escaping (Result<[Entity], Error>) -> Void
 	)
 	
@@ -32,7 +42,7 @@ public protocol DatabaseServiceProtocol {
 	)
 	
 	func read<Entity: Object>(
-		predicate: NSPredicate?,
+		predicate: NSPredicate,
 		sortDescriptors: [NSSortDescriptor],
 		completion: @escaping (Result<[Entity], Error>) -> Void
 	)

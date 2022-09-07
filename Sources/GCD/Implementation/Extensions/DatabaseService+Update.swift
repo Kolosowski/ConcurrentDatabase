@@ -13,7 +13,7 @@ public extension DatabaseService {
 				if let entity = entities.first {
 					update(entity)
 				} else {
-					completion(.failure(Error.objectNotFound(primaryKey: primaryKey)))
+					completion(.failure(Error.objectWithKeyNotFound(primaryKey: primaryKey)))
 				}
 			} completion: { result in
 				completion(result)
@@ -50,7 +50,7 @@ private extension DatabaseService {
 					if let entity = realm.object(ofType: Entity.self, forPrimaryKey: key) {
 						return entity
 					} else {
-						errors.append(Error.objectNotFound(primaryKey: key))
+						errors.append(Error.objectWithKeyNotFound(primaryKey: key))
 						return nil
 					}
 				}

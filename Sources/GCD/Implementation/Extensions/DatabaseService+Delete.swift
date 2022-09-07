@@ -16,7 +16,7 @@ public extension DatabaseService {
 			} else if case let Result.success(entities) = result, let entity = entities.first {
 				completion(.success(entity))
 			} else {
-				completion(.failure(Error.objectNotFound(primaryKey: primaryKey)))
+				completion(.failure(Error.objectWithKeyNotFound(primaryKey: primaryKey)))
 			}
 		}
 	}
@@ -56,7 +56,7 @@ private extension DatabaseService {
 							errors.append(error)
 						}
 					} else {
-						errors.append(Error.objectNotFound(primaryKey: $0))
+						errors.append(Error.objectWithKeyNotFound(primaryKey: $0))
 					}
 				}
 				
