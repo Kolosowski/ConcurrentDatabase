@@ -54,7 +54,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 						block(.success(entity))
 						realm.add(entity, update: .modified)
 					} else {
-						block(.failure(NSError(domain: "Couldn't find object with primary key \(primaryKey)", code: .zero)))
+						block(.failure(NSError(domain: "Couldn't find entity with primary key \(primaryKey)", code: .zero)))
 					}
 				}
 			} catch {
@@ -88,7 +88,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 							errors.append(error)
 						}
 					} else {
-						errors.append(NSError(domain: "Couldn't find object with primary key \($0)", code: .zero))
+						errors.append(NSError(domain: "Couldn't find entity with primary key \($0)", code: .zero))
 					}
 				}
 				
