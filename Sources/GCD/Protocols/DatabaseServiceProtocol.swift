@@ -15,7 +15,7 @@ protocol DatabaseServiceProtocol {
 		completion: @escaping (Result<Void, Error>) -> Void
 	)
 	
-	// MARK: - Read Array
+	// MARK: - Read Sequence
 	
 	func read<Entity: Object>(
 		completion: @escaping (Result<[Entity], Error>) -> Void
