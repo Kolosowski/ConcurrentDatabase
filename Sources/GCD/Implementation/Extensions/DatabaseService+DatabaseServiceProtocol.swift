@@ -95,13 +95,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 				if errors.isEmpty {
 					completion(.success(deletedEntities))
 				} else {
-					let error = NSError(
-						domain: errors.reduce(into: "") {
-							$0 += $1.localizedDescription + ". "
-						},
-						code: .zero
-					)
-					completion(.failure(error))
+					completion(.failure(Self.Error.fetchMultiple(errors: errors)))
 				}
 			} catch {
 				completion(.failure(error))
