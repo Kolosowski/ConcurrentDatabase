@@ -48,6 +48,11 @@ protocol DatabaseServiceProtocol {
 	// MARK: - Delete
 	
 	func delete<Entity: Object>(
+		_ primaryKey: String,
+		completion: @escaping (Result<Entity, Error>) -> Void
+	)
+	
+	func delete<Entity: Object>(
 		_ primaryKeys: [String],
 		completion: @escaping (Result<[Entity], Error>) -> Void
 	)
