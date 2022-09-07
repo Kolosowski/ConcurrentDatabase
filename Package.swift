@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
 	name: "ConcurrentDatabase",
+	platforms: [.iOS("13")],
 	products: [
 		.library(
 			name: "ConcurrentDatabase",
@@ -20,11 +21,17 @@ let package = Package(
 	targets: [
 		.target(
 			name: "ConcurrentDatabase",
-			dependencies: []
+			dependencies: [
+				.product(name: "RealmSwift", package: "realm-swift"),
+			],
+			path: "Sources/"
 		),
 		.testTarget(
 			name: "ConcurrentDatabaseTests",
-			dependencies: ["ConcurrentDatabase"]
+			dependencies: [
+				"ConcurrentDatabase"
+			],
+			path: "Tests/"
 		),
 	]
 )
