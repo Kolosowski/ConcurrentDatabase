@@ -18,7 +18,6 @@ public extension DatabaseService {
 			} completion: { result in
 				completion(result)
 			}
-
 	}
 	
 	func update<Entity: Object>(
