@@ -1,18 +1,19 @@
 import Foundation
 import RealmSwift
 
-public extension DatabaseService {
+extension DatabaseService {
 	
-	func erase(
+	func save<Entity: Object>(
+		_ entities: [Entity],
 		completion: @escaping (Result<Void, Swift.Error>) -> Void
 	) {
 		workQueue.async {
 			do {
 				let realm = try Realm(configuration: configuration)
 				try realm.write {
-					realm.deleteAll()
-					completion(.success(Void()))
+					realm.add(entities)
 				}
+				completion(.success(Void()))
 			} catch {
 				completion(.failure(error))
 			}
