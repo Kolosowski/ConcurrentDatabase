@@ -104,16 +104,15 @@ extension DatabaseService: DatabaseServiceProtocol {
 		update: @escaping (Entity) -> Void,
 		completion: @escaping (Result<Void, Swift.Error>) -> Void
 	) {
-		modify(
-			[primaryKey]) { (entities: [Entity]) in
-				if let entity = entities.first {
-					update(entity)
-				} else {
-					completion(.failure(Error.objectWithKeyNotFound(primaryKey: primaryKey)))
-				}
-			} completion: { result in
-				completion(result)
+		modify([primaryKey]) { (entities: [Entity]) in
+			if let entity = entities.first {
+				update(entity)
+			} else {
+				completion(.failure(Error.objectWithKeyNotFound(primaryKey: primaryKey)))
 			}
+		} completion: { result in
+			completion(result)
+		}
 	}
 	
 	public func update<Entity: Object>(
