@@ -28,12 +28,15 @@ extension DatabaseService: DatabaseServiceProtocol {
 		fetch(
 			predicate: NSPredicate(format: "\(Entity.primaryKey() ?? "") == %@", primaryKey)
 		) { (result: Result<[Entity], Swift.Error>) in
-			if case let Result.failure(error) = result {
+			switch result {
+			case .success(let entities):
+				if let entity = entities.first {
+					completion(.success(entity))
+				} else {
+					completion(.failure(Error.objectWithKeyNotFound(primaryKey: primaryKey)))
+				}
+			case .failure(let error):
 				completion(.failure(error))
-			} else if case let Result.success(entities) = result, let entity = entities.first {
-				completion(.success(entity))
-			} else {
-				completion(.failure(Error.objectWithKeyNotFound(primaryKey: primaryKey)))
 			}
 		}
 	}
@@ -43,12 +46,15 @@ extension DatabaseService: DatabaseServiceProtocol {
 		completion: @escaping (Result<Entity, Swift.Error>) -> Void
 	) {
 		fetch(predicate: predicate) { (result: Result<[Entity], Swift.Error>) in
-			if case let Result.failure(error) = result {
+			switch result {
+			case .success(let entities):
+				if let entity = entities.first {
+					completion(.success(entity))
+				} else {
+					completion(.failure(Error.objectNotFound))
+				}
+			case .failure(let error):
 				completion(.failure(error))
-			} else if case let Result.success(entities) = result, let entity = entities.first {
-				completion(.success(entity))
-			} else {
-				completion(.failure(Error.objectNotFound))
 			}
 		}
 	}
@@ -132,12 +138,15 @@ extension DatabaseService: DatabaseServiceProtocol {
 		completion: @escaping (Result<Entity, Swift.Error>) -> Void
 	) {
 		remove([primaryKey]) { (result: Result<[Entity], Swift.Error>) in
-			if case let Result.failure(error) = result {
+			switch result {
+			case .success(let entities):
+				if let entity = entities.first {
+					completion(.success(entity))
+				} else {
+					completion(.failure(Error.objectWithKeyNotFound(primaryKey: primaryKey)))
+				}
+			case .failure(let error):
 				completion(.failure(error))
-			} else if case let Result.success(entities) = result, let entity = entities.first {
-				completion(.success(entity))
-			} else {
-				completion(.failure(Error.objectWithKeyNotFound(primaryKey: primaryKey)))
 			}
 		}
 	}
