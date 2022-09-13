@@ -27,7 +27,7 @@ extension DatabaseService {
 				if errors.isEmpty {
 					completion(.success(Void()))
 				} else {
-					completion(.failure(Error.fetchMultiple(errors: errors)))
+					completion(.failure(Error.multipleObjectsNotUpdated))
 				}
 			} catch {
 				completion(.failure(error))

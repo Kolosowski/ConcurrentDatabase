@@ -37,7 +37,7 @@ extension DatabaseService {
 				if errors.isEmpty {
 					completion(.success(deletedEntities))
 				} else {
-					completion(.failure(Error.fetchMultiple(errors: errors)))
+					completion(.failure(Error.multipleObjectsNotRemoved))
 				}
 			} catch {
 				completion(.failure(error))
