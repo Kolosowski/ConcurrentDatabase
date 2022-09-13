@@ -5,7 +5,9 @@ import PackageDescription
 
 let package = Package(
 	name: "ConcurrentDatabase",
-	platforms: [.iOS("13")],
+	platforms: [
+		.iOS(.v13)
+	],
 	products: [
 		.library(
 			name: "ConcurrentDatabase",
@@ -33,5 +35,6 @@ let package = Package(
 			],
 			path: "Tests/"
 		),
-	]
+	],
+	swiftLanguageVersions: [.v5]
 )
