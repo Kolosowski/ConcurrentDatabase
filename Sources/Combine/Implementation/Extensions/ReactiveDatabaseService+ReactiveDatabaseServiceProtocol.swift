@@ -200,4 +200,24 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		}.eraseToAnyPublisher()
 	}
 	
+	// MARK: - Erase
+	
+	public func erase() -> AnyPublisher<Void, Swift.Error> {
+		Deferred {
+			Future { promise in
+				workQueue.async {
+					do {
+						let realm = try Realm(configuration: configuration)
+						try realm.write {
+							realm.deleteAll()
+							promise(.success(Void()))
+						}
+					} catch {
+						promise(.failure(error))
+					}
+				}
+			}
+		}.eraseToAnyPublisher()
+	}
+	
 }

@@ -49,4 +49,8 @@ public protocol ReactiveDatabaseServiceProtocol {
 		_ primaryKeys: [String]
 	) -> AnyPublisher<[Entity], Error>
 	
+	// MARK: - Erase
+	
+	func erase() -> AnyPublisher<Void, Error>
+	
 }
