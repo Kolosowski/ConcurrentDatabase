@@ -10,7 +10,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		_ entity: Entity
 	) -> AnyPublisher<Void, Error> {
 		Deferred {
-			Future<Void, Error> { promise in
+			Future { promise in
 				self.save([entity]) { result in
 					switch result {
 					case .success:
@@ -27,7 +27,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		_ entities: [Entity]
 	) -> AnyPublisher<Void, Error> {
 		Deferred {
-			Future<Void, Error> { promise in
+			Future { promise in
 				self.save(entities) { result in
 					switch result {
 					case .success:
