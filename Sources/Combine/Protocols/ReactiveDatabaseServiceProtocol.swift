@@ -39,6 +39,18 @@ public protocol ReactiveDatabaseServiceProtocol {
 		sortDescriptors: [NSSortDescriptor]
 	) -> AnyPublisher<[Entity], Error>
 	
+	// MARK: - Update
+	
+	func update<Entity: Object>(
+		_ primaryKey: String,
+		update: @escaping (Entity) -> Void
+	) -> AnyPublisher<Void, Error>
+	
+	func update<Entity: Object>(
+		_ primaryKeys: [String],
+		update: @escaping ([Entity]) -> Void
+	) -> AnyPublisher<Void, Error>
+	
 	// MARK: - Delete
 	
 	func delete<Entity: Object>(
