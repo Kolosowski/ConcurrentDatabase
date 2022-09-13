@@ -14,7 +14,13 @@ extension DatabaseService {
 				var errors: [Swift.Error] = []
 				
 				primaryKeys.forEach {
-					if let entity = realm.object(ofType: Entity.self, forPrimaryKey: $0), !entity.isInvalidated {
+					if
+						let entity = realm.object(
+							ofType: Entity.self,
+							forPrimaryKey: $0
+						),
+						!entity.isInvalidated
+					{
 						do {
 							try realm.write {
 								deletedEntities.append(entity)
