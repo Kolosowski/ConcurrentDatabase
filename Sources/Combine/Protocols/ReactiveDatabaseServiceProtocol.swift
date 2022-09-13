@@ -39,4 +39,14 @@ public protocol ReactiveDatabaseServiceProtocol {
 		sortDescriptors: [NSSortDescriptor]
 	) -> AnyPublisher<[Entity], Error>
 	
+	// MARK: - Delete
+	
+	func delete<Entity: Object>(
+		_ primaryKey: String
+	) -> AnyPublisher<Entity, Error>
+	
+	func delete<Entity: Object>(
+		_ primaryKeys: [String]
+	) -> AnyPublisher<[Entity], Error>
+	
 }

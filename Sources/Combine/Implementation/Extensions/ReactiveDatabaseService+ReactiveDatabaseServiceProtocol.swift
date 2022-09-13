@@ -160,4 +160,44 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		}.eraseToAnyPublisher()
 	}
 	
+	// MARK: - Delete
+	
+	public func delete<Entity: Object>(
+		_ primaryKey: String
+	) -> AnyPublisher<Entity, Swift.Error> {
+		Deferred {
+			Future { promise in
+				self.remove([primaryKey]) { (result: Result<[Entity], Swift.Error>) in
+					switch result {
+					case .success(let entities):
+						guard let entity = entities.first else {
+							promise(.failure(Error.objectNotFound(primaryKey: primaryKey)))
+							return
+						}
+						promise(.success(entity))
+					case .failure(let error):
+						promise(.failure(error))
+					}
+				}
+			}
+		}.eraseToAnyPublisher()
+	}
+	
+	public func delete<Entity: Object>(
+		_ primaryKeys: [String]
+	) -> AnyPublisher<[Entity], Swift.Error> {
+		Deferred {
+			Future { promise in
+				self.remove(primaryKeys) { (result: Result<[Entity], Swift.Error>) in
+					switch result {
+					case .success(let entities):
+						promise(.success(entities))
+					case .failure(let error):
+						promise(.failure(error))
+					}
+				}
+			}
+		}.eraseToAnyPublisher()
+	}
+	
 }
