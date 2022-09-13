@@ -16,7 +16,7 @@ extension DatabaseService {
 					if let entity = realm.object(ofType: Entity.self, forPrimaryKey: key) {
 						return entity
 					} else {
-						errors.append(Error.objectWithKeyNotFound(primaryKey: key))
+						errors.append(Error.objectNotFound(primaryKey: key))
 						return nil
 					}
 				}

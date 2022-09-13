@@ -33,7 +33,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 				if let entity = entities.first {
 					completion(.success(entity))
 				} else {
-					completion(.failure(Error.objectWithKeyNotFound(primaryKey: primaryKey)))
+					completion(.failure(Error.objectNotFound(primaryKey: primaryKey)))
 				}
 			case .failure(let error):
 				completion(.failure(error))
@@ -51,7 +51,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 				if let entity = entities.first {
 					completion(.success(entity))
 				} else {
-					completion(.failure(Error.objectNotFound))
+					completion(.failure(Error.objectNotFound(filter: predicate.predicateFormat)))
 				}
 			case .failure(let error):
 				completion(.failure(error))
@@ -108,7 +108,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 			if let entity = entities.first {
 				update(entity)
 			} else {
-				completion(.failure(Error.objectWithKeyNotFound(primaryKey: primaryKey)))
+				completion(.failure(Error.objectNotFound(primaryKey: primaryKey)))
 			}
 		} completion: { result in
 			completion(result)
@@ -142,7 +142,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 				if let entity = entities.first {
 					completion(.success(entity))
 				} else {
-					completion(.failure(Error.objectWithKeyNotFound(primaryKey: primaryKey)))
+					completion(.failure(Error.objectNotFound(primaryKey: primaryKey)))
 				}
 			case .failure(let error):
 				completion(.failure(error))

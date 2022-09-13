@@ -24,7 +24,7 @@ extension DatabaseService {
 							errors.append(error)
 						}
 					} else {
-						errors.append(Error.objectWithKeyNotFound(primaryKey: $0))
+						errors.append(Error.objectNotFound(primaryKey: $0))
 					}
 				}
 				
