@@ -41,12 +41,12 @@ public protocol ReactiveDatabaseServiceProtocol {
 	
 	// MARK: - Update
 	
-	func update<Entity: Object>(
+	func updatePublisher<Entity: Object>(
 		_ primaryKey: String,
 		update: @escaping (Entity) -> Void
 	) -> AnyPublisher<Void, Error>
 	
-	func update<Entity: Object>(
+	func updatePublisher<Entity: Object>(
 		_ primaryKeys: [String],
 		update: @escaping ([Entity]) -> Void
 	) -> AnyPublisher<Void, Error>

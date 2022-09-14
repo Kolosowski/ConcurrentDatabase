@@ -162,7 +162,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	// MARK: - Update
 	
-	public func update<Entity: Object>(
+	public func updatePublisher<Entity: Object>(
 		_ primaryKey: String,
 		update: @escaping (Entity) -> Void
 	) -> AnyPublisher<Void, Swift.Error> {
@@ -186,7 +186,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		}.eraseToAnyPublisher()
 	}
 	
-	public func update<Entity: Object>(
+	public func updatePublisher<Entity: Object>(
 		_ primaryKeys: [String],
 		update: @escaping ([Entity]) -> Void
 	) -> AnyPublisher<Void, Swift.Error> {
