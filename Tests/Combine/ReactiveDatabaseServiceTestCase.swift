@@ -376,7 +376,10 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 		database
 			.updatePublisher(UUID().uuidString) { (_: MockEntity) in }
 			.sink { completion in
-				if case let Subscribers.Completion.failure(error) = completion, error is ReactiveDatabaseService.Error {
+				if
+					case let Subscribers.Completion.failure(error) = completion,
+					error is ReactiveDatabaseService.Error
+				{
 					XCTAssertTrue(true)
 					updateExpectation.fulfill()
 				} else {
@@ -385,6 +388,114 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 			} receiveValue: { _ in }
 			.store(in: &cancellables)
 		wait(for: [updateExpectation], timeout: 2)
+	}
+	
+	// MARK: - Delete Tests
+	
+	func testDelete() {
+		// Given
+		let createExpectation = XCTestExpectation(description: "create")
+		let deleteExpectation = XCTestExpectation(description: "delete")
+		let readExpectation = XCTestExpectation(description: "read")
+		let newEntities = (.zero...10).map { _ in
+			MockEntity()
+		}
+		
+		// When
+		database
+			.createPublisher(newEntities)
+			.sink { completion in
+				if case Subscribers.Completion.failure(_) = completion {
+					XCTFail()
+				}
+			} receiveValue: { _ in
+				createExpectation.fulfill()
+			}
+			.store(in: &cancellables)
+		let deletedEntityID = newEntities.randomElement()?.id ?? ""
+		database
+			.deletePublisher(deletedEntityID)
+			.sink { completion in
+				if case Subscribers.Completion.failure(_) = completion {
+					XCTFail()
+				}
+			} receiveValue: { (_: MockEntity) in
+				deleteExpectation.fulfill()
+			}
+			.store(in: &cancellables)
+		
+		// Then
+		database
+			.readPublisher(deletedEntityID)
+			.sink { completion in
+				if
+					case let Subscribers.Completion.failure(error) = completion,
+					error is ReactiveDatabaseService.Error
+				{
+					XCTAssertTrue(true)
+					readExpectation.fulfill()
+				} else {
+					XCTFail()
+				}
+			} receiveValue: { (_: MockEntity) in }
+			.store(in: &cancellables)
+		
+		wait(for: [createExpectation, deleteExpectation, readExpectation], timeout: 2)
+	}
+	
+	func testDeleteSequence() {
+		// Given
+		let createExpectation = XCTestExpectation(description: "create")
+		let deleteExpectation = XCTestExpectation(description: "delete")
+		let readExpectation = XCTestExpectation(description: "read")
+		let newEntities = (.zero...10).map { _ in
+			MockEntity()
+		}
+		let newEntitiesIDs = newEntities.map {
+			$0.id
+		}
+
+		// When
+		database
+			.createPublisher(newEntities)
+			.sink { completion in
+				if case Subscribers.Completion.failure(_) = completion {
+					XCTFail()
+				}
+			} receiveValue: { _ in
+				createExpectation.fulfill()
+			}
+			.store(in: &cancellables)
+		let deletedEntitiesIDs = newEntities[2...5].map {
+			$0.id
+		}
+		database
+			.deletePublisher(deletedEntitiesIDs)
+			.sink { completion in
+				if case Subscribers.Completion.failure(_) = completion {
+					XCTFail()
+				}
+			} receiveValue: { (_: [MockEntity]) in
+				deleteExpectation.fulfill()
+			}
+			.store(in: &cancellables)
+
+		// Then
+		database
+			.readPublisher()
+			.sink { completion in
+				if case Subscribers.Completion.failure(_) = completion {
+					XCTFail()
+				}
+			} receiveValue: { (storedObjects: [MockEntity]) in
+				let storedObjectsIDs = storedObjects.map {
+					$0.id
+				}
+				XCTAssertNotEqual(storedObjectsIDs, newEntitiesIDs)
+				readExpectation.fulfill()
+			}
+			.store(in: &cancellables)
+		wait(for: [createExpectation, deleteExpectation, readExpectation], timeout: 2)
 	}
 	
 	// MARK: - Erase Tests
