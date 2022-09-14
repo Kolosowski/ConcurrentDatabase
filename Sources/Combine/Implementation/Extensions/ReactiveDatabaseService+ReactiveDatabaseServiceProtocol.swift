@@ -6,7 +6,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	// MARK: - Create
 	
-	public func create<Entity: Object>(
+	public func createPublisher<Entity: Object>(
 		_ entity: Entity
 	) -> AnyPublisher<Void, Swift.Error> {
 		Deferred {
@@ -23,7 +23,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		}.eraseToAnyPublisher()
 	}
 	
-	public func create<Entity: Object>(
+	public func createPublisher<Entity: Object>(
 		_ entities: [Entity]
 	) -> AnyPublisher<Void, Swift.Error> {
 		Deferred {
@@ -42,7 +42,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	// MARK: - Read
 	
-	public func read<Entity: Object>(
+	public func readPublisher<Entity: Object>(
 		_ primaryKey: String
 	) -> AnyPublisher<Entity, Swift.Error> {
 		Deferred {
@@ -65,7 +65,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		}.eraseToAnyPublisher()
 	}
 	
-	public func read<Entity: Object>(
+	public func readPublisher<Entity: Object>(
 		predicate: NSPredicate
 	) -> AnyPublisher<Entity, Swift.Error> {
 		Deferred {
@@ -86,7 +86,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		}.eraseToAnyPublisher()
 	}
 	
-	public func read<Entity: Object>() -> AnyPublisher<[Entity], Swift.Error> {
+	public func readPublisher<Entity: Object>() -> AnyPublisher<[Entity], Swift.Error> {
 		Deferred {
 			Future { promise in
 				self.fetch { (result: Result<[Entity], Swift.Error>) in
@@ -101,7 +101,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		}.eraseToAnyPublisher()
 	}
 	
-	public func read<Entity: Object>(
+	public func readPublisher<Entity: Object>(
 		predicate: NSPredicate
 	) -> AnyPublisher<[Entity], Swift.Error> {
 		Deferred {
@@ -120,7 +120,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		}.eraseToAnyPublisher()
 	}
 	
-	public func read<Entity: Object>(
+	public func readPublisher<Entity: Object>(
 		sortDescriptors: [NSSortDescriptor]
 	) -> AnyPublisher<[Entity], Swift.Error> {
 		Deferred {
@@ -139,7 +139,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		}.eraseToAnyPublisher()
 	}
 	
-	public func read<Entity: Object>(
+	public func readPublisher<Entity: Object>(
 		predicate: NSPredicate,
 		sortDescriptors: [NSSortDescriptor]
 	) -> AnyPublisher<[Entity], Swift.Error> {

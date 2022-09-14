@@ -6,35 +6,35 @@ public protocol ReactiveDatabaseServiceProtocol {
 	
 	// MARK: - Create
 	
-	func create<Entity: Object>(
+	func createPublisher<Entity: Object>(
 		_ entity: Entity
 	) -> AnyPublisher<Void, Error>
 	
-	func create<Entity: Object>(
+	func createPublisher<Entity: Object>(
 		_ entities: [Entity]
 	) -> AnyPublisher<Void, Error>
 	
 	// MARK: - Read
 	
-	func read<Entity: Object>(
+	func readPublisher<Entity: Object>(
 		_ primaryKey: String
 	) -> AnyPublisher<Entity, Error>
 	
-	func read<Entity: Object>(
+	func readPublisher<Entity: Object>(
 		predicate: NSPredicate
 	) -> AnyPublisher<Entity, Error>
 	
-	func read<Entity: Object>() -> AnyPublisher<[Entity], Error>
+	func readPublisher<Entity: Object>() -> AnyPublisher<[Entity], Error>
 	
-	func read<Entity: Object>(
+	func readPublisher<Entity: Object>(
 		predicate: NSPredicate
 	) -> AnyPublisher<[Entity], Error>
 	
-	func read<Entity: Object>(
+	func readPublisher<Entity: Object>(
 		sortDescriptors: [NSSortDescriptor]
 	) -> AnyPublisher<[Entity], Error>
 	
-	func read<Entity: Object>(
+	func readPublisher<Entity: Object>(
 		predicate: NSPredicate,
 		sortDescriptors: [NSSortDescriptor]
 	) -> AnyPublisher<[Entity], Error>
