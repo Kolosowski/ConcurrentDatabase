@@ -55,7 +55,7 @@ public protocol AsyncDatabaseServiceProtocol {
 	@discardableResult
 	func delete<Entity: Object>(
 		_ primaryKey: String
-	) async throws -> [Entity]
+	) async throws -> Entity
 	
 	@discardableResult
 	func delete<Entity: Object>(
