@@ -53,11 +53,11 @@ public protocol ReactiveDatabaseServiceProtocol {
 	
 	// MARK: - Delete
 	
-	func delete<Entity: Object>(
+	func deletePublisher<Entity: Object>(
 		_ primaryKey: String
 	) -> AnyPublisher<Entity, Error>
 	
-	func delete<Entity: Object>(
+	func deletePublisher<Entity: Object>(
 		_ primaryKeys: [String]
 	) -> AnyPublisher<[Entity], Error>
 	

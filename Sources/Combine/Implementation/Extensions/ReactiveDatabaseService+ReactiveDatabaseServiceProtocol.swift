@@ -206,7 +206,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	// MARK: - Delete
 	
-	public func delete<Entity: Object>(
+	public func deletePublisher<Entity: Object>(
 		_ primaryKey: String
 	) -> AnyPublisher<Entity, Swift.Error> {
 		Deferred {
@@ -227,7 +227,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		}.eraseToAnyPublisher()
 	}
 	
-	public func delete<Entity: Object>(
+	public func deletePublisher<Entity: Object>(
 		_ primaryKeys: [String]
 	) -> AnyPublisher<[Entity], Swift.Error> {
 		Deferred {
