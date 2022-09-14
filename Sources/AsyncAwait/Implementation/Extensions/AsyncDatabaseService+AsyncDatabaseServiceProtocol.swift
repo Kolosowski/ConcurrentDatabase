@@ -22,34 +22,36 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 	func read<Entity: Object>(
 		_ primaryKey: String
 	) async throws -> Entity {
-		
+		.init()
 	}
 	
 	func read<Entity: Object>(
 		predicate: NSPredicate
 	) async throws -> Entity {
-		
+		.init()
 	}
 	
-	func read<Entity: Object>() async throws -> [Entity]
+	func read<Entity: Object>() async throws -> [Entity] {
+		[]
+	}
 	
 	func read<Entity: Object>(
 		predicate: NSPredicate
 	) async throws -> [Entity] {
-		
+		[]
 	}
 	
 	func read<Entity: Object>(
 		sortDescriptors: [NSSortDescriptor]
 	) async throws -> [Entity] {
-		
+		[]
 	}
 	
 	func read<Entity: Object>(
 		predicate: NSPredicate,
 		sortDescriptors: [NSSortDescriptor]
 	) async throws -> [Entity] {
-		
+		[]
 	}
 	
 	// MARK: - Update
@@ -70,18 +72,24 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 	
 	// MARK: - Delete
 	
+	/**
+	 - returns: Invalidated entity.
+	 */
 	@discardableResult
 	func delete<Entity: Object>(
 		_ primaryKey: String
-	) async throws -> [Entity] {
-		
+	) async throws -> Entity {
+		.init()
 	}
 	
+	/**
+	 - returns: Array of invalidated entities..
+	 */
 	@discardableResult
 	func delete<Entity: Object>(
 		_ primaryKeys: [String]
 	) async throws -> [Entity] {
-		
+		[]
 	}
 	
 	// MARK: - Erase
