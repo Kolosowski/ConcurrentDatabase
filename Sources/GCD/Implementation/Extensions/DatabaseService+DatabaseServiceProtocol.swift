@@ -130,7 +130,7 @@ extension DatabaseService: DatabaseServiceProtocol {
 	// MARK: - Delete
 	
 	/**
-	 - parameter completion: Contains invalidated entity or error if it weren't deleted.
+	 - parameter completion: Contains invalidated entity or error if it wasn't deleted.
 	 */
 	public func delete<Entity: Object>(
 		_ primaryKey: String,

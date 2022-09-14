@@ -206,6 +206,9 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	// MARK: - Delete
 	
+	/**
+	 - returns: Publisher which contains invalidated entity or error if it wasn't deleted.
+	 */
 	public func deletePublisher<Entity: Object>(
 		_ primaryKey: String
 	) -> AnyPublisher<Entity, Swift.Error> {
@@ -227,6 +230,9 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		}.eraseToAnyPublisher()
 	}
 	
+	/**
+	 - returns: Publisher which contains invalidated entities or error if some entities weren't deleted.
+	 */
 	public func deletePublisher<Entity: Object>(
 		_ primaryKeys: [String]
 	) -> AnyPublisher<[Entity], Swift.Error> {
