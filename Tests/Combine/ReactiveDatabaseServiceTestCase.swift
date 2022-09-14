@@ -264,6 +264,129 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 		wait(for: [createExpectation, readExpectation], timeout: 2)
 	}
 	
+	// MARK: - Update Tests
+	
+	func testUpdate() {
+		// Given
+		let createExpectation = XCTestExpectation(description: "create")
+		let updateExpectation = XCTestExpectation(description: "update")
+		let readExpectation = XCTestExpectation(description: "read")
+		let newEntity = MockEntity()
+		let newEntityValue = 10
+		newEntity.testValue = newEntityValue
+		
+		// When
+		database
+			.createPublisher(newEntity)
+			.sink { completion in
+				if case Subscribers.Completion.failure(_) = completion {
+					XCTFail()
+				}
+			} receiveValue: { _ in
+				createExpectation.fulfill()
+			}
+			.store(in: &cancellables)
+		let updatedEntityValue = newEntityValue + 100
+		database
+			.updatePublisher(newEntity.id) { (entity: MockEntity) in
+				entity.testValue = updatedEntityValue
+			}
+			.sink { completion in
+				if case Subscribers.Completion.failure(_) = completion {
+					XCTFail()
+				}
+			} receiveValue: { _ in
+				updateExpectation.fulfill()
+			}
+			.store(in: &cancellables)
+		
+		// Then
+		database
+			.readPublisher(newEntity.id)
+			.sink { completion in
+				if case Subscribers.Completion.failure(_) = completion {
+					XCTFail()
+				}
+			} receiveValue: { (storedObject: MockEntity) in
+				XCTAssertEqual(storedObject.id, newEntity.id)
+				XCTAssertEqual(storedObject.testValue, updatedEntityValue)
+				readExpectation.fulfill()
+			}
+			.store(in: &cancellables)
+		wait(for: [createExpectation, updateExpectation, readExpectation], timeout: 2)
+	}
+	
+	func testUpdateSequence() {
+		// Given
+		let createExpectation = XCTestExpectation(description: "create")
+		let updateExpectation = XCTestExpectation(description: "update")
+		let readExpectation = XCTestExpectation(description: "read")
+		let newEntity = MockEntity()
+		let newEntityValue = 10
+		newEntity.testValue = newEntityValue
+		
+		// When
+		database
+			.createPublisher(newEntity)
+			.sink { completion in
+				if case Subscribers.Completion.failure(_) = completion {
+					XCTFail()
+				}
+			} receiveValue: { _ in
+				createExpectation.fulfill()
+			}
+			.store(in: &cancellables)
+		let updatedEntityValue = newEntityValue + 100
+		database
+			.updatePublisher([newEntity.id]) { (entities: [MockEntity]) in
+				entities
+					.first {
+						$0.id == newEntity.id
+					}?
+					.testValue = updatedEntityValue
+			}
+			.sink { completion in
+				if case Subscribers.Completion.failure(_) = completion {
+					XCTFail()
+				}
+			} receiveValue: { _ in
+				updateExpectation.fulfill()
+			}
+			.store(in: &cancellables)
+		
+		// Then
+		database
+			.readPublisher(newEntity.id)
+			.sink { completion in
+				if case Subscribers.Completion.failure(_) = completion {
+					XCTFail()
+				}
+			} receiveValue: { (storedObject: MockEntity) in
+				XCTAssertEqual(storedObject.id, newEntity.id)
+				XCTAssertEqual(storedObject.testValue, updatedEntityValue)
+				readExpectation.fulfill()
+			}
+			.store(in: &cancellables)
+		wait(for: [createExpectation, updateExpectation, readExpectation], timeout: 2)
+	}
+	
+	func testUpdate_notExistedEntity() {
+		let updateExpectation = XCTestExpectation(description: "update")
+		
+		database
+			.updatePublisher(UUID().uuidString) { (_: MockEntity) in }
+			.sink { completion in
+				if case let Subscribers.Completion.failure(error) = completion, error is ReactiveDatabaseService.Error {
+					XCTAssertTrue(true)
+					updateExpectation.fulfill()
+				} else {
+					XCTFail()
+				}
+			} receiveValue: { _ in }
+			.store(in: &cancellables)
+		wait(for: [updateExpectation], timeout: 2)
+	}
+	
 	// MARK: - Erase Tests
 	
 	func testErase() {

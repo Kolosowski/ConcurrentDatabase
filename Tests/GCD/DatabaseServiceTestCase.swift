@@ -231,7 +231,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 		newEntity.testValue = newEntityValue
 		
 		// When
-		database.create([newEntity]) { result in
+		database.create(newEntity) { result in
 			if case Result.failure(_) = result {
 				XCTFail()
 			}
@@ -267,7 +267,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 		newEntity.testValue = newEntityValue
 		
 		// When
-		database.create([newEntity]) { result in
+		database.create(newEntity) { result in
 			if case Result.failure(_) = result {
 				XCTFail()
 			}
