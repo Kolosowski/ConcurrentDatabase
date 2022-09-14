@@ -4,7 +4,9 @@ import RealmSwift
 
 final class DatabaseServiceTestCase: XCTestCase {
 	
-	private let database: DatabaseService = DatabaseService(
+	// MARK: - Stored Properties - Service
+	
+	private let database: DatabaseServiceProtocol = DatabaseService(
 		configuration: Realm.Configuration(
 			inMemoryIdentifier: "inMemory"
 		)
