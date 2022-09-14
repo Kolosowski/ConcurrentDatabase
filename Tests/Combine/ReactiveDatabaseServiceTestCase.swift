@@ -21,7 +21,7 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 	
 	override func tearDown() {
 		database
-			.erase()
+			.erasePublisher
 			.sink { completion in
 				if case Subscribers.Completion.failure(_) = completion {
 					XCTFail()

@@ -63,6 +63,6 @@ public protocol ReactiveDatabaseServiceProtocol {
 	
 	// MARK: - Erase
 	
-	func erase() -> AnyPublisher<Void, Error>
+	var erasePublisher: AnyPublisher<Void, Error> { get }
 	
 }

@@ -246,7 +246,7 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	// MARK: - Erase
 	
-	public func erase() -> AnyPublisher<Void, Swift.Error> {
+	public var erasePublisher: AnyPublisher<Void, Swift.Error> {
 		Deferred {
 			Future { promise in
 				workQueue.async {
