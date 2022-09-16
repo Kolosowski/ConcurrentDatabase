@@ -7,35 +7,50 @@ extension DatabaseService: DatabaseServiceProtocol {
 	
 	public func create<Entity: Object>(
 		_ entity: Entity,
-		completion: @escaping (Result<Void, Swift.Error>) -> Void
+		completion: @escaping (Result<Void, Error>) -> Void
 	) {
-		save([entity], completion: completion)
+		workQueue.async {
+			do {
+				try executer.save([entity])
+				completion(.success(Void()))
+			} catch {
+				completion(.failure(error))
+			}
+		}
 	}
 	
 	public func create<Entity: Object>(
 		_ entities: [Entity],
-		completion: @escaping (Result<Void, Swift.Error>) -> Void
+		completion: @escaping (Result<Void, Error>) -> Void
 	) {
-		save(entities, completion: completion)
+		workQueue.async {
+			do {
+				try executer.save(entities)
+				completion(.success(Void()))
+			} catch {
+				completion(.failure(error))
+			}
+		}
 	}
 	
 	// MARK: - Read
 	
 	public func read<Entity: Object>(
 		_ primaryKey: String,
-		completion: @escaping (Result<Entity, Swift.Error>) -> Void
+		completion: @escaping (Result<Entity, Error>) -> Void
 	) {
-		fetch(
-			predicate: NSPredicate(format: "\(Entity.primaryKey() ?? "") == %@", primaryKey)
-		) { (result: Result<[Entity], Swift.Error>) in
-			switch result {
-			case .success(let entities):
+		workQueue.async {
+			do {
+				let entities: [Entity] = try executer.fetch(
+					predicate: NSPredicate(format: "\(Entity.primaryKey() ?? "") == %@", primaryKey)
+				)
 				if let entity = entities.first {
 					completion(.success(entity))
 				} else {
-					completion(.failure(Error.objectNotFound(primaryKey: primaryKey)))
+					// TODO: Error
+					completion(.failure(DatabaseExecuter.Error.objectNotFound(primaryKey: primaryKey)))
 				}
-			case .failure(let error):
+			} catch {
 				completion(.failure(error))
 			}
 		}
@@ -43,58 +58,85 @@ extension DatabaseService: DatabaseServiceProtocol {
 	
 	public func read<Entity: Object>(
 		predicate: NSPredicate,
-		completion: @escaping (Result<Entity, Swift.Error>) -> Void
+		completion: @escaping (Result<Entity, Error>) -> Void
 	) {
-		fetch(predicate: predicate) { (result: Result<[Entity], Swift.Error>) in
-			switch result {
-			case .success(let entities):
+		workQueue.async {
+			do {
+				let entities: [Entity] = try executer.fetch(
+					predicate: predicate
+				)
 				if let entity = entities.first {
 					completion(.success(entity))
 				} else {
-					completion(.failure(Error.objectNotFound(filter: predicate.predicateFormat)))
+					// TODO: - Error
+					completion(.failure(DatabaseExecuter.Error.objectNotFound(primaryKey: "primaryKey")))
 				}
-			case .failure(let error):
+			} catch {
 				completion(.failure(error))
 			}
 		}
 	}
 	
 	public func read<Entity: Object>(
-		completion: @escaping (Result<[Entity], Swift.Error>) -> Void
+		completion: @escaping (Result<[Entity], Error>) -> Void
 	) {
-		fetch(completion: completion)
+		workQueue.async {
+			do {
+				completion(.success(try executer.fetch()))
+			} catch {
+				completion(.failure(error))
+			}
+		}
 	}
 	
 	public func read<Entity: Object>(
 		predicate: NSPredicate,
-		completion: @escaping (Result<[Entity], Swift.Error>) -> Void
+		completion: @escaping (Result<[Entity], Error>) -> Void
 	) {
-		fetch(
-			predicate: predicate,
-			completion: completion
-		)
+		workQueue.async {
+			do {
+				let entities: [Entity] = try executer.fetch(
+					predicate: predicate
+				)
+				completion(.success(entities))
+			} catch {
+				completion(.failure(error))
+			}
+		}
 	}
 	
 	public func read<Entity: Object>(
 		sortDescriptors: [NSSortDescriptor],
-		completion: @escaping (Result<[Entity], Swift.Error>) -> Void
+		completion: @escaping (Result<[Entity], Error>) -> Void
 	) {
-		fetch(
-			sortDescriptors: sortDescriptors,
-			completion: completion
-		)
+		workQueue.async {
+			do {
+				let entities: [Entity] = try executer.fetch(
+					sortDescriptors: sortDescriptors
+				)
+				completion(.success(entities))
+			} catch {
+				completion(.failure(error))
+			}
+		}
 	}
 	
 	public func read<Entity: Object>(
 		predicate: NSPredicate,
 		sortDescriptors: [NSSortDescriptor],
-		completion: @escaping (Result<[Entity], Swift.Error>) -> Void
+		completion: @escaping (Result<[Entity], Error>) -> Void
 	) {
-		fetch(
-			predicate: predicate,
-			sortDescriptors: sortDescriptors,
-			completion: completion
-		)
+		workQueue.async {
+			do {
+				let entities: [Entity] = try executer.fetch(
+					predicate: predicate,
+					sortDescriptors: sortDescriptors
+				)
+				completion(.success(entities))
+			} catch {
+				completion(.failure(error))
+			}
+		}
 	}
 	
 	// MARK: - Update
@@ -102,29 +144,40 @@ extension DatabaseService: DatabaseServiceProtocol {
 	public func update<Entity: Object>(
 		_ primaryKey: String,
 		update: @escaping (Entity) -> Void,
-		completion: @escaping (Result<Void, Swift.Error>) -> Void
+		completion: @escaping (Result<Void, Error>) -> Void
 	) {
-		modify([primaryKey]) { (entities: [Entity]) in
-			if let entity = entities.first {
-				update(entity)
-			} else {
-				completion(.failure(Error.objectNotFound(primaryKey: primaryKey)))
+		workQueue.async {
+			do {
+				try executer.modify([primaryKey]) { (entities: [Entity]) in
+					if let entity = entities.first {
+						update(entity)
+						completion(.success(Void()))
+					} else {
+						// TODO: Error
+						completion(.failure(DatabaseExecuter.Error.objectNotFound(primaryKey: primaryKey)))
+					}
+				}
+			} catch {
+				completion(.failure(error))
 			}
-		} completion: { result in
-			completion(result)
 		}
 	}
 	
 	public func update<Entity: Object>(
 		_ primaryKeys: [String],
 		update: @escaping ([Entity]) -> Void,
-		completion: @escaping (Result<Void, Swift.Error>) -> Void
+		completion: @escaping (Result<Void, Error>) -> Void
 	) {
-		modify(
-			primaryKeys,
-			update: update,
-			completion: completion
-		)
+		workQueue.async {
+			do {
+				try executer.modify(primaryKeys) { (entities: [Entity]) in
+					update(entities)
+				}
+				completion(.success(Void()))
+			} catch {
+				completion(.failure(error))
+			}
+		}
 	}
 	
 	// MARK: - Delete
@@ -134,17 +187,18 @@ extension DatabaseService: DatabaseServiceProtocol {
 	 */
 	public func delete<Entity: Object>(
 		_ primaryKey: String,
-		completion: @escaping (Result<Entity, Swift.Error>) -> Void
+		completion: @escaping (Result<Entity, Error>) -> Void
 	) {
-		remove([primaryKey]) { (result: Result<[Entity], Swift.Error>) in
-			switch result {
-			case .success(let entities):
+		workQueue.async {
+			do {
+				let entities: [Entity] = try executer.remove([primaryKey])
 				if let entity = entities.first {
 					completion(.success(entity))
 				} else {
-					completion(.failure(Error.objectNotFound(primaryKey: primaryKey)))
+					// TODO: Error
+					completion(.failure(DatabaseExecuter.Error.objectNotFound(primaryKey: primaryKey)))
 				}
-			case .failure(let error):
+			} catch {
 				completion(.failure(error))
 			}
 		}
@@ -155,23 +209,27 @@ extension DatabaseService: DatabaseServiceProtocol {
 	 */
 	public func delete<Entity: Object>(
 		_ primaryKeys: [String],
-		completion: @escaping (Result<[Entity], Swift.Error>) -> Void
+		completion: @escaping (Result<[Entity], Error>) -> Void
 	) {
-		remove(primaryKeys, completion: completion)
+		workQueue.async {
+			do {
+				let entities: [Entity] = try executer.remove(primaryKeys)
+				completion(.success(entities))
+			} catch {
+				completion(.failure(error))
+			}
+		}
 	}
 	
 	// MARK: - Erase
 	
 	public func erase(
-		completion: @escaping (Result<Void, Swift.Error>) -> Void
+		completion: @escaping (Result<Void, Error>) -> Void
 	) {
 		workQueue.async {
 			do {
-				let realm = try Realm(configuration: configuration)
-				try realm.write {
-					realm.deleteAll()
-					completion(.success(Void()))
-				}
+				try executer.erase()
+				completion(.success(Void()))
 			} catch {
 				completion(.failure(error))
 			}
