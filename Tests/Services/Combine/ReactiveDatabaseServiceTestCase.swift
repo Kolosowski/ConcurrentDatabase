@@ -378,7 +378,7 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 			.sink { completion in
 				if
 					case let Subscribers.Completion.failure(error) = completion,
-					error is ReactiveDatabaseService.Error
+					error is DatabaseError
 				{
 					XCTAssertTrue(true)
 					updateExpectation.fulfill()
@@ -430,7 +430,7 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 			.sink { completion in
 				if
 					case let Subscribers.Completion.failure(error) = completion,
-					error is ReactiveDatabaseService.Error
+					error is DatabaseError
 				{
 					XCTAssertTrue(true)
 					readExpectation.fulfill()

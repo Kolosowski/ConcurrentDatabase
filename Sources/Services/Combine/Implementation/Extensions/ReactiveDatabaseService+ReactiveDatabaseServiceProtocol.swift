@@ -8,14 +8,14 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	public func createPublisher<Entity: Object>(
 		_ entity: Entity
-	) -> AnyPublisher<Void, Swift.Error> {
+	) -> AnyPublisher<Void, Error> {
 		Deferred {
 			Future { promise in
-				self.save([entity]) { result in
-					switch result {
-					case .success:
+				workQueue.async {
+					do {
+						try executer.save([entity])
 						promise(.success(Void()))
-					case .failure(let error):
+					} catch {
 						promise(.failure(error))
 					}
 				}
@@ -25,14 +25,14 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	public func createPublisher<Entity: Object>(
 		_ entities: [Entity]
-	) -> AnyPublisher<Void, Swift.Error> {
+	) -> AnyPublisher<Void, Error> {
 		Deferred {
 			Future { promise in
-				self.save(entities) { result in
-					switch result {
-					case .success:
+				workQueue.async {
+					do {
+						try executer.save(entities)
 						promise(.success(Void()))
-					case .failure(let error):
+					} catch {
 						promise(.failure(error))
 					}
 				}
@@ -44,20 +44,20 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	public func readPublisher<Entity: Object>(
 		_ primaryKey: String
-	) -> AnyPublisher<Entity, Swift.Error> {
+	) -> AnyPublisher<Entity, Error> {
 		Deferred {
 			Future { promise in
-				self.fetch(
-					predicate: NSPredicate(format: "\(Entity.primaryKey() ?? "") == %@", primaryKey)
-				) { (result: Result<[Entity], Swift.Error>) in
-					switch result {
-					case .success(let entities):
-						guard let entity = entities.first else {
-							promise(.failure(Error.objectNotFound(primaryKey: primaryKey)))
-							return
+				workQueue.async {
+					do {
+						let entities: [Entity] = try executer.fetch(
+							predicate: NSPredicate(format: "\(Entity.primaryKey() ?? "") == %@", primaryKey)
+						)
+						if let entity = entities.first {
+							promise(.success(entity))
+						} else {
+							promise(.failure(DatabaseError.objectNotFound(primaryKey: primaryKey)))
 						}
-						promise(.success(entity))
-					case .failure(let error):
+					} catch {
 						promise(.failure(error))
 					}
 				}
@@ -67,18 +67,20 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	public func readPublisher<Entity: Object>(
 		predicate: NSPredicate
-	) -> AnyPublisher<Entity, Swift.Error> {
+	) -> AnyPublisher<Entity, Error> {
 		Deferred {
 			Future { promise in
-				self.fetch(predicate: predicate) { (result: Result<[Entity], Swift.Error>) in
-					switch result {
-					case .success(let entities):
-						guard let entity = entities.first else {
-							promise(.failure(Error.objectNotFound(filter: predicate.predicateFormat)))
-							return
+				workQueue.async {
+					do {
+						let entities: [Entity] = try executer.fetch(
+							predicate: predicate
+						)
+						if let entity = entities.first {
+							promise(.success(entity))
+						} else {
+							promise(.failure(DatabaseError.objectNotFound(filter: predicate.predicateFormat)))
 						}
-						promise(.success(entity))
-					case .failure(let error):
+					} catch {
 						promise(.failure(error))
 					}
 				}
@@ -86,14 +88,13 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 		}.eraseToAnyPublisher()
 	}
 	
-	public func readPublisher<Entity: Object>() -> AnyPublisher<[Entity], Swift.Error> {
+	public func readPublisher<Entity: Object>() -> AnyPublisher<[Entity], Error> {
 		Deferred {
 			Future { promise in
-				self.fetch { (result: Result<[Entity], Swift.Error>) in
-					switch result {
-					case .success(let entities):
-						promise(.success(entities))
-					case .failure(let error):
+				workQueue.async {
+					do {
+						promise(.success(try executer.fetch()))
+					} catch {
 						promise(.failure(error))
 					}
 				}
@@ -103,16 +104,16 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	public func readPublisher<Entity: Object>(
 		predicate: NSPredicate
-	) -> AnyPublisher<[Entity], Swift.Error> {
+	) -> AnyPublisher<[Entity], Error> {
 		Deferred {
 			Future { promise in
-				self.fetch(
-					predicate: predicate
-				) { (result: Result<[Entity], Swift.Error>) in
-					switch result {
-					case .success(let entities):
+				workQueue.async {
+					do {
+						let entities: [Entity] = try executer.fetch(
+							predicate: predicate
+						)
 						promise(.success(entities))
-					case .failure(let error):
+					} catch {
 						promise(.failure(error))
 					}
 				}
@@ -122,16 +123,16 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	public func readPublisher<Entity: Object>(
 		sortDescriptors: [NSSortDescriptor]
-	) -> AnyPublisher<[Entity], Swift.Error> {
+	) -> AnyPublisher<[Entity], Error> {
 		Deferred {
 			Future { promise in
-				self.fetch(
-					sortDescriptors: sortDescriptors
-				) { (result: Result<[Entity], Swift.Error>) in
-					switch result {
-					case .success(let entities):
+				workQueue.async {
+					do {
+						let entities: [Entity] = try executer.fetch(
+							sortDescriptors: sortDescriptors
+						)
 						promise(.success(entities))
-					case .failure(let error):
+					} catch {
 						promise(.failure(error))
 					}
 				}
@@ -142,17 +143,17 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	public func readPublisher<Entity: Object>(
 		predicate: NSPredicate,
 		sortDescriptors: [NSSortDescriptor]
-	) -> AnyPublisher<[Entity], Swift.Error> {
+	) -> AnyPublisher<[Entity], Error> {
 		Deferred {
 			Future { promise in
-				self.fetch(
-					predicate: predicate,
-					sortDescriptors: sortDescriptors
-				) { (result: Result<[Entity], Swift.Error>) in
-					switch result {
-					case .success(let entities):
+				workQueue.async {
+					do {
+						let entities: [Entity] = try executer.fetch(
+							predicate: predicate,
+							sortDescriptors: sortDescriptors
+						)
 						promise(.success(entities))
-					case .failure(let error):
+					} catch {
 						promise(.failure(error))
 					}
 				}
@@ -165,20 +166,20 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	public func updatePublisher<Entity: Object>(
 		_ primaryKey: String,
 		update: @escaping (Entity) -> Void
-	) -> AnyPublisher<Void, Swift.Error> {
+	) -> AnyPublisher<Void, Error> {
 		Deferred {
 			Future { promise in
-				self.modify([primaryKey]) { (entities: [Entity]) in
-					if let entity = entities.first {
-						update(entity)
-					} else {
-						promise(.failure(Error.objectNotFound(primaryKey: primaryKey)))
-					}
-				} completion: { result in
-					switch result {
-					case .success:
-						promise(.success(Void()))
-					case .failure(let error):
+				workQueue.async {
+					do {
+						try executer.modify([primaryKey]) { (entities: [Entity]) in
+							if let entity = entities.first {
+								update(entity)
+								promise(.success(Void()))
+							} else {
+								promise(.failure(DatabaseError.objectNotFound(primaryKey: primaryKey)))
+							}
+						}
+					} catch {
 						promise(.failure(error))
 					}
 				}
@@ -189,14 +190,16 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	public func updatePublisher<Entity: Object>(
 		_ primaryKeys: [String],
 		update: @escaping ([Entity]) -> Void
-	) -> AnyPublisher<Void, Swift.Error> {
+	) -> AnyPublisher<Void, Error> {
 		Deferred {
 			Future { promise in
-				self.modify(primaryKeys, update: update) { result in
-					switch result {
-					case .success:
+				workQueue.async {
+					do {
+						try executer.modify(primaryKeys) { (entities: [Entity]) in
+							update(entities)
+						}
 						promise(.success(Void()))
-					case .failure(let error):
+					} catch {
 						promise(.failure(error))
 					}
 				}
@@ -211,18 +214,18 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	 */
 	public func deletePublisher<Entity: Object>(
 		_ primaryKey: String
-	) -> AnyPublisher<Entity, Swift.Error> {
+	) -> AnyPublisher<Entity, Error> {
 		Deferred {
 			Future { promise in
-				self.remove([primaryKey]) { (result: Result<[Entity], Swift.Error>) in
-					switch result {
-					case .success(let entities):
-						guard let entity = entities.first else {
-							promise(.failure(Error.objectNotFound(primaryKey: primaryKey)))
-							return
+				workQueue.async {
+					do {
+						let entities: [Entity] = try executer.remove([primaryKey])
+						if let entity = entities.first {
+							promise(.success(entity))
+						} else {
+							promise(.failure(DatabaseError.objectNotFound(primaryKey: primaryKey)))
 						}
-						promise(.success(entity))
-					case .failure(let error):
+					} catch {
 						promise(.failure(error))
 					}
 				}
@@ -235,14 +238,14 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	 */
 	public func deletePublisher<Entity: Object>(
 		_ primaryKeys: [String]
-	) -> AnyPublisher<[Entity], Swift.Error> {
+	) -> AnyPublisher<[Entity], Error> {
 		Deferred {
 			Future { promise in
-				self.remove(primaryKeys) { (result: Result<[Entity], Swift.Error>) in
-					switch result {
-					case .success(let entities):
+				workQueue.async {
+					do {
+						let entities: [Entity] = try executer.remove(primaryKeys)
 						promise(.success(entities))
-					case .failure(let error):
+					} catch {
 						promise(.failure(error))
 					}
 				}
@@ -252,16 +255,13 @@ extension ReactiveDatabaseService: ReactiveDatabaseServiceProtocol {
 	
 	// MARK: - Erase
 	
-	public var erasePublisher: AnyPublisher<Void, Swift.Error> {
+	public var erasePublisher: AnyPublisher<Void, Error> {
 		Deferred {
 			Future { promise in
 				workQueue.async {
 					do {
-						let realm = try Realm(configuration: configuration)
-						try realm.write {
-							realm.deleteAll()
-							promise(.success(Void()))
-						}
+						try executer.erase()
+						promise(.success(Void()))
 					} catch {
 						promise(.failure(error))
 					}

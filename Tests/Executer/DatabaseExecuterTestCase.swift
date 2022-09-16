@@ -169,7 +169,7 @@ final class DatabaseExecuterTestCase: XCTestCase {
 			let _: [MockEntity] = try executer.remove(["Foo"])
 			XCTFail()
 		} catch {
-			XCTAssert(error is DatabaseExecuter.Error)
+			XCTAssert(error is DatabaseError)
 		}
 	}
 	
