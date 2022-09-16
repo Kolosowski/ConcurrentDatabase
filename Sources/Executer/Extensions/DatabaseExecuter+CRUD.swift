@@ -40,7 +40,7 @@ extension DatabaseExecuter {
 			if let entity = realm.object(ofType: Entity.self, forPrimaryKey: primaryKey) {
 				entities.append(entity)
 			} else {
-				throw Error.objectNotFound(primaryKey: primaryKey)
+				throw DatabaseError.objectNotFound(primaryKey: primaryKey)
 			}
 		}
 		
@@ -64,7 +64,7 @@ extension DatabaseExecuter {
 					realm.delete(entity)
 				}
 			} else {
-				throw Error.objectNotFound(primaryKey: primaryKey)
+				throw DatabaseError.objectNotFound(primaryKey: primaryKey)
 			}
 		}
 		
