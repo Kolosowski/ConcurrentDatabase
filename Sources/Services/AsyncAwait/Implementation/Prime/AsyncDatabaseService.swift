@@ -4,12 +4,12 @@ import RealmSwift
 final actor AsyncDatabaseService {
 	
 	let workQueue: DispatchQueue = .init(label: "com.databaseService.async.workQueue")
-	let configuration: Realm.Configuration
+	let executer: DatabaseExecuter
 	
 	// MARK: - Life Cycle
 	
 	init(configuration: Realm.Configuration) {
-		self.configuration = configuration
+		executer = .init(configuration: configuration)
 	}
 	
 }
