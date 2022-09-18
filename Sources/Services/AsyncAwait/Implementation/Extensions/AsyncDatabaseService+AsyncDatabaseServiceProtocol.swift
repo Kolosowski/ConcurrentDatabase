@@ -5,13 +5,13 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 	
 	// MARK: - Create
 	
-	func create<Entity: Object>(
+	public func create<Entity: Object>(
 		_ entity: Entity
 	) async throws {
 		try executer.save([entity])
 	}
 	
-	func create<Entity: Object>(
+	public func create<Entity: Object>(
 		_ entities: [Entity]
 	) async throws {
 		try executer.save(entities)
@@ -19,7 +19,7 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 	
 	// MARK: - Read
 	
-	func read<Entity: Object>(
+	public func read<Entity: Object>(
 		_ primaryKey: String
 	) async throws -> Entity {
 		let entities: [Entity] = try executer.fetch(
@@ -33,7 +33,7 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 		}
 	}
 	
-	func read<Entity: Object>(
+	public func read<Entity: Object>(
 		predicate: NSPredicate
 	) async throws -> Entity {
 		let entities: [Entity] = try executer.fetch(
@@ -47,23 +47,23 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 		}
 	}
 	
-	func read<Entity: Object>() async throws -> [Entity] {
+	public func read<Entity: Object>() async throws -> [Entity] {
 		try executer.fetch()
 	}
 	
-	func read<Entity: Object>(
+	public func read<Entity: Object>(
 		predicate: NSPredicate
 	) async throws -> [Entity] {
 		try executer.fetch(predicate: predicate)
 	}
 	
-	func read<Entity: Object>(
+	public func read<Entity: Object>(
 		sortDescriptors: [NSSortDescriptor]
 	) async throws -> [Entity] {
 		try executer.fetch(sortDescriptors: sortDescriptors)
 	}
 	
-	func read<Entity: Object>(
+	public func read<Entity: Object>(
 		predicate: NSPredicate,
 		sortDescriptors: [NSSortDescriptor]
 	) async throws -> [Entity] {
@@ -72,7 +72,7 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 	
 	// MARK: - Update
 	
-	func update<Entity: Object>(
+	public func update<Entity: Object>(
 		_ primaryKey: String,
 		update: @escaping (Entity) -> Void
 	) async throws {
@@ -83,7 +83,7 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 		}
 	}
 	
-	func update<Entity: Object>(
+	public func update<Entity: Object>(
 		_ primaryKeys: [String],
 		update: @escaping ([Entity]) -> Void
 	) async throws {
@@ -96,7 +96,7 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 	 - returns: Invalidated entity.
 	 */
 	@discardableResult
-	func delete<Entity: Object>(
+	public func delete<Entity: Object>(
 		_ primaryKey: String
 	) async throws -> Entity {
 		let entities: [Entity] = try executer.remove([primaryKey])
@@ -112,7 +112,7 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 	 - returns: Array of invalidated entities..
 	 */
 	@discardableResult
-	func delete<Entity: Object>(
+	public func delete<Entity: Object>(
 		_ primaryKeys: [String]
 	) async throws -> [Entity] {
 		try executer.remove(primaryKeys)
@@ -120,7 +120,7 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 	
 	// MARK: - Erase
 	
-	func erase() async throws {
+	public func erase() async throws {
 		try executer.erase()
 	}
 	
