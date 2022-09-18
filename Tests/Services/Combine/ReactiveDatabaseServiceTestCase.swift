@@ -28,7 +28,6 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 				}
 			} receiveValue: { _ in }
 			.store(in: &cancellables)
-		cancellables.removeAll()
 	}
 	
 	// MARK: - Read Tests
@@ -89,17 +88,16 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 			.store(in: &cancellables)
 		
 		// Then
-		let filterValue = 3
 		database
 			.readPublisher(
-				predicate: NSPredicate(format: "testValue == %d", filterValue)
+				predicate: NSPredicate(format: "testValue == %d", 3)
 			)
 			.sink { completion in
 				if case Subscribers.Completion.failure(_) = completion {
 					XCTFail()
 				}
 			} receiveValue: { (storedObject: MockEntity) in
-				XCTAssertEqual(storedObject.testValue, filterValue)
+				XCTAssertEqual(storedObject.testValue, 3)
 				readExpectation.fulfill()
 			}
 			.store(in: &cancellables)
@@ -271,9 +269,11 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 		let createExpectation = XCTestExpectation(description: "create")
 		let updateExpectation = XCTestExpectation(description: "update")
 		let readExpectation = XCTestExpectation(description: "read")
-		let newEntity = MockEntity()
-		let newEntityValue = 10
-		newEntity.testValue = newEntityValue
+		let newEntity = {
+			let mock = MockEntity()
+			mock.testValue = 10
+			return mock
+		}()
 		
 		// When
 		database
@@ -286,10 +286,9 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 				createExpectation.fulfill()
 			}
 			.store(in: &cancellables)
-		let updatedEntityValue = newEntityValue + 100
 		database
 			.updatePublisher(newEntity.id) { (entity: MockEntity) in
-				entity.testValue = updatedEntityValue
+				entity.testValue = 999
 			}
 			.sink { completion in
 				if case Subscribers.Completion.failure(_) = completion {
@@ -308,8 +307,7 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 					XCTFail()
 				}
 			} receiveValue: { (storedObject: MockEntity) in
-				XCTAssertEqual(storedObject.id, newEntity.id)
-				XCTAssertEqual(storedObject.testValue, updatedEntityValue)
+				XCTAssertEqual(storedObject.testValue, 999)
 				readExpectation.fulfill()
 			}
 			.store(in: &cancellables)
@@ -321,13 +319,15 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 		let createExpectation = XCTestExpectation(description: "create")
 		let updateExpectation = XCTestExpectation(description: "update")
 		let readExpectation = XCTestExpectation(description: "read")
-		let newEntity = MockEntity()
-		let newEntityValue = 10
-		newEntity.testValue = newEntityValue
+		let newEntities = (.zero...10).map { value -> MockEntity in
+			let mock = MockEntity()
+			mock.testValue = value
+			return mock
+		}
 		
 		// When
 		database
-			.createPublisher(newEntity)
+			.createPublisher(newEntities)
 			.sink { completion in
 				if case Subscribers.Completion.failure(_) = completion {
 					XCTFail()
@@ -336,14 +336,13 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 				createExpectation.fulfill()
 			}
 			.store(in: &cancellables)
-		let updatedEntityValue = newEntityValue + 100
 		database
-			.updatePublisher([newEntity.id]) { (entities: [MockEntity]) in
-				entities
-					.first {
-						$0.id == newEntity.id
-					}?
-					.testValue = updatedEntityValue
+			.updatePublisher(
+				[newEntities[3].id, newEntities[7].id]
+			) { (entities: [MockEntity]) in
+				entities.forEach {
+					$0.testValue = 999
+				}
 			}
 			.sink { completion in
 				if case Subscribers.Completion.failure(_) = completion {
@@ -356,14 +355,15 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 		
 		// Then
 		database
-			.readPublisher(newEntity.id)
+			.readPublisher(
+				predicate: NSPredicate(format: "testValue == %d", 999)
+			)
 			.sink { completion in
 				if case Subscribers.Completion.failure(_) = completion {
 					XCTFail()
 				}
-			} receiveValue: { (storedObject: MockEntity) in
-				XCTAssertEqual(storedObject.id, newEntity.id)
-				XCTAssertEqual(storedObject.testValue, updatedEntityValue)
+			} receiveValue: { (storedObjects: [MockEntity]) in
+				XCTAssertEqual(storedObjects.count, 2)
 				readExpectation.fulfill()
 			}
 			.store(in: &cancellables)
@@ -372,7 +372,6 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 	
 	func testUpdate_notExistedEntity() {
 		let updateExpectation = XCTestExpectation(description: "update")
-		
 		database
 			.updatePublisher(UUID().uuidString) { (_: MockEntity) in }
 			.sink { completion in
@@ -412,9 +411,8 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 				createExpectation.fulfill()
 			}
 			.store(in: &cancellables)
-		let deletedEntityID = newEntities.randomElement()?.id ?? ""
 		database
-			.deletePublisher(deletedEntityID)
+			.deletePublisher(newEntities[4].id)
 			.sink { completion in
 				if case Subscribers.Completion.failure(_) = completion {
 					XCTFail()
@@ -426,7 +424,7 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 		
 		// Then
 		database
-			.readPublisher(deletedEntityID)
+			.readPublisher(newEntities[4].id)
 			.sink { completion in
 				if
 					case let Subscribers.Completion.failure(error) = completion,
@@ -451,9 +449,7 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 		let newEntities = (.zero...10).map { _ in
 			MockEntity()
 		}
-		let newEntitiesIDs = newEntities.map {
-			$0.id
-		}
+		let deletedIDs = [newEntities[3].id, newEntities[6].id]
 
 		// When
 		database
@@ -466,11 +462,8 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 				createExpectation.fulfill()
 			}
 			.store(in: &cancellables)
-		let deletedEntitiesIDs = newEntities[2...5].map {
-			$0.id
-		}
 		database
-			.deletePublisher(deletedEntitiesIDs)
+			.deletePublisher(deletedIDs)
 			.sink { completion in
 				if case Subscribers.Completion.failure(_) = completion {
 					XCTFail()
@@ -488,10 +481,12 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 					XCTFail()
 				}
 			} receiveValue: { (storedObjects: [MockEntity]) in
-				let storedObjectsIDs = storedObjects.map {
-					$0.id
-				}
-				XCTAssertNotEqual(storedObjectsIDs, newEntitiesIDs)
+				XCTAssert(
+					!storedObjects.contains {
+						$0.id == deletedIDs.first ||
+						$0.id == deletedIDs.last
+					}
+				)
 				readExpectation.fulfill()
 			}
 			.store(in: &cancellables)
