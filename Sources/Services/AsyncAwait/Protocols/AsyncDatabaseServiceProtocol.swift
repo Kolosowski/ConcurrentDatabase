@@ -20,22 +20,22 @@ public protocol AsyncDatabaseServiceProtocol {
 	) async throws -> Entity
 	
 	func read<Entity: Object>(
-		predicate: NSPredicate
+		predicate: Predicate
 	) async throws -> Entity
 	
 	func read<Entity: Object>() async throws -> [Entity]
 	
 	func read<Entity: Object>(
-		predicate: NSPredicate
+		predicate: Predicate
 	) async throws -> [Entity]
 	
 	func read<Entity: Object>(
-		sortDescriptors: [NSSortDescriptor]
+		sortDescriptors: [SortDescriptor]
 	) async throws -> [Entity]
 	
 	func read<Entity: Object>(
-		predicate: NSPredicate,
-		sortDescriptors: [NSSortDescriptor]
+		predicate: Predicate,
+		sortDescriptors: [SortDescriptor]
 	) async throws -> [Entity]
 	
 	// MARK: - Update

@@ -23,7 +23,7 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 		_ primaryKey: String
 	) async throws -> Entity {
 		let entities: [Entity] = try executer.fetch(
-			predicate: NSPredicate(format: "\(Entity.primaryKey() ?? "") == %@", primaryKey)
+			predicate: Predicate(format: "\(Entity.primaryKey() ?? "") == %@", primaryKey)
 		)
 		
 		if let entity = entities.first {
@@ -34,7 +34,7 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 	}
 	
 	public func read<Entity: Object>(
-		predicate: NSPredicate
+		predicate: Predicate
 	) async throws -> Entity {
 		let entities: [Entity] = try executer.fetch(
 			predicate: predicate
@@ -52,20 +52,20 @@ extension AsyncDatabaseService: AsyncDatabaseServiceProtocol {
 	}
 	
 	public func read<Entity: Object>(
-		predicate: NSPredicate
+		predicate: Predicate
 	) async throws -> [Entity] {
 		try executer.fetch(predicate: predicate)
 	}
 	
 	public func read<Entity: Object>(
-		sortDescriptors: [NSSortDescriptor]
+		sortDescriptors: [SortDescriptor]
 	) async throws -> [Entity] {
 		try executer.fetch(sortDescriptors: sortDescriptors)
 	}
 	
 	public func read<Entity: Object>(
-		predicate: NSPredicate,
-		sortDescriptors: [NSSortDescriptor]
+		predicate: Predicate,
+		sortDescriptors: [SortDescriptor]
 	) async throws -> [Entity] {
 		try executer.fetch(predicate: predicate, sortDescriptors: sortDescriptors)
 	}
