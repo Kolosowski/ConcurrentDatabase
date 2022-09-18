@@ -70,13 +70,12 @@ final class DatabaseServiceTestCase: XCTestCase {
 		}
 		
 		// Then
-		let filterValue = 3
 		database.read(
-			predicate: NSPredicate(format: "testValue == %d", filterValue)
+			predicate: NSPredicate(format: "testValue == %d", 3)
 		) { (result: Result<MockEntity, Error>) in
 			switch result {
 			case .success(let storedObject):
-				XCTAssertEqual(storedObject.testValue, filterValue)
+				XCTAssertEqual(storedObject.testValue, 3)
 			case .failure(_):
 				XCTFail()
 			}
@@ -226,9 +225,11 @@ final class DatabaseServiceTestCase: XCTestCase {
 		let createExpectation = XCTestExpectation(description: "create")
 		let updateExpectation = XCTestExpectation(description: "update")
 		let readExpectation = XCTestExpectation(description: "read")
-		let newEntity = MockEntity()
-		let newEntityValue = 10
-		newEntity.testValue = newEntityValue
+		let newEntity = {
+			let mock = MockEntity()
+			mock.testValue = 10
+			return mock
+		}()
 		
 		// When
 		database.create(newEntity) { result in
@@ -237,9 +238,8 @@ final class DatabaseServiceTestCase: XCTestCase {
 			}
 			createExpectation.fulfill()
 		}
-		let updatedEntityValue = newEntityValue + 100
 		database.update(newEntity.id) { (entity: MockEntity) in
-			entity.testValue = updatedEntityValue
+			entity.testValue = 1000
 			updateExpectation.fulfill()
 		} completion: { _ in }
 		
@@ -247,8 +247,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 		database.read(newEntity.id) { (result: Result<MockEntity, Error>) in
 			switch result {
 			case .success(let storedObject):
-				XCTAssertEqual(storedObject.id, newEntity.id)
-				XCTAssertEqual(storedObject.testValue, updatedEntityValue)
+				XCTAssertEqual(storedObject.testValue, 1000)
 			case .failure(_):
 				XCTFail()
 			}
@@ -262,34 +261,35 @@ final class DatabaseServiceTestCase: XCTestCase {
 		let createExpectation = XCTestExpectation(description: "create")
 		let updateExpectation = XCTestExpectation(description: "update")
 		let readExpectation = XCTestExpectation(description: "read")
-		let newEntity = MockEntity()
-		let newEntityValue = 10
-		newEntity.testValue = newEntityValue
+		let newEntities = (.zero...10).map { value -> MockEntity in
+			let mock = MockEntity()
+			mock.testValue = value
+			return mock
+		}
 		
 		// When
-		database.create(newEntity) { result in
+		database.create(newEntities) { result in
 			if case Result.failure(_) = result {
 				XCTFail()
 			}
 			createExpectation.fulfill()
 		}
-		let updatedEntityValue = newEntityValue + 100
-		database.update([newEntity.id]) { (entities: [MockEntity]) in
-			entities
-				.first {
-					$0.id == newEntity.id
-				}?
-				.testValue = updatedEntityValue
+		database.update(
+			[newEntities[3].id, newEntities[7].id]
+		) { (entities: [MockEntity]) in
+			entities.forEach {
+				$0.testValue = 999
+			}
 			updateExpectation.fulfill()
 		} completion: { _ in }
 		
 		// Then
-		database.read { (result: Result<[MockEntity], Error>) in
+		database.read(
+			predicate: NSPredicate(format: "testValue == %d", 999)
+		) { (result: Result<[MockEntity], Error>) in
 			switch result {
 			case .success(let storedObjects):
-				let object = storedObjects.first
-				XCTAssertEqual(object?.id, newEntity.id)
-				XCTAssertEqual(object?.testValue, updatedEntityValue)
+				XCTAssertEqual(storedObjects.count, 2)
 			case .failure(_):
 				XCTFail()
 			}
@@ -300,11 +300,16 @@ final class DatabaseServiceTestCase: XCTestCase {
 	
 	func testUpdate_notExistedEntity() {
 		let updateExpectation = XCTestExpectation(description: "update")
-		
-		database.update([UUID().uuidString]) { (entities: [MockEntity]) in
-			XCTAssert(entities.isEmpty)
+		database.update([UUID().uuidString]) { (_: [MockEntity]) in
+			XCTFail()
+		} completion: { result in
+			if case Result.failure(_) = result {
+				XCTAssertTrue(true)
+			} else {
+				XCTFail()
+			}
 			updateExpectation.fulfill()
-		} completion: { _ in }
+		}
 		wait(for: [updateExpectation], timeout: 2)
 	}
 	
@@ -326,8 +331,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 			}
 			createExpectation.fulfill()
 		}
-		let deletedEntityID = newEntities.randomElement()?.id ?? ""
-		database.delete(deletedEntityID) { (result: Result<MockEntity, Error>) in
+		database.delete(newEntities[4].id) { (result: Result<MockEntity, Error>) in
 			if case Result.failure(_) = result {
 				XCTFail()
 			}
@@ -335,7 +339,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 		}
 		
 		// Then
-		database.read(deletedEntityID) { (result: Result<MockEntity, Error>) in
+		database.read(newEntities[4].id) { (result: Result<MockEntity, Error>) in
 			switch result {
 			case .success:
 				XCTFail()
@@ -355,9 +359,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 		let newEntities = (.zero...10).map { _ in
 			MockEntity()
 		}
-		let newEntitiesIDs = newEntities.map {
-			$0.id
-		}
+		let deletedIDs = [newEntities[3].id, newEntities[6].id]
 		
 		// When
 		database.create(newEntities) { result in
@@ -366,10 +368,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 			}
 			createExpectation.fulfill()
 		}
-		let deletedEntitiesIDs = newEntities[2...5].map {
-			$0.id
-		}
-		database.delete(deletedEntitiesIDs) { (result: Result<[MockEntity], Error>) in
+		database.delete(deletedIDs) { (result: Result<[MockEntity], Error>) in
 			if case Result.failure(_) = result {
 				XCTFail()
 			}
@@ -380,10 +379,12 @@ final class DatabaseServiceTestCase: XCTestCase {
 		database.read { (result: Result<[MockEntity], Error>) in
 			switch result {
 			case .success(let storedObjects):
-				let storedObjectsIDs = storedObjects.map {
-					$0.id
-				}
-				XCTAssertNotEqual(storedObjectsIDs, newEntitiesIDs)
+				XCTAssert(
+					!storedObjects.contains {
+						$0.id == deletedIDs.first ||
+						$0.id == deletedIDs.last
+					}
+				)
 			case .failure(_):
 				XCTFail()
 			}
