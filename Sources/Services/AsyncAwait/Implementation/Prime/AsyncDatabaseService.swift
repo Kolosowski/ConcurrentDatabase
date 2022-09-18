@@ -1,7 +1,7 @@
 import Foundation
 import RealmSwift
 
-final actor AsyncDatabaseService {
+public final actor AsyncDatabaseService {
 	
 	let workQueue: DispatchQueue = .init(label: "com.databaseService.async.workQueue")
 	let executer: DatabaseExecuter
