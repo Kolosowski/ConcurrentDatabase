@@ -133,7 +133,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 		
 		// Then
 		database.read(
-			predicate: NSPredicate(format: "testValue == 2 OR testValue == 4")
+			predicate: NSPredicate(format: "testValue == %d OR testValue == %d", 2, 4)
 		) { (result: Result<[MockEntity], Error>) in
 			switch result {
 			case .success(let storedObjects):
@@ -202,7 +202,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 		
 		// Then
 		database.read(
-			predicate: NSPredicate(format: "testValue == 2 OR testValue == 4"),
+			predicate: NSPredicate(format: "testValue == %d OR testValue == %d", 2, 4),
 			sortDescriptors: [NSSortDescriptor(key: "testValue", ascending: false)]
 		) { (result: Result<[MockEntity], Error>) in
 			switch result {

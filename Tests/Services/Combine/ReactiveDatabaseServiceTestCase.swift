@@ -164,7 +164,7 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 		// Then
 		database
 			.readPublisher(
-				predicate: NSPredicate(format: "testValue == 2 OR testValue == 4")
+				predicate: NSPredicate(format: "testValue == %d OR testValue == %d", 2, 4)
 			)
 			.sink { completion in
 				if case Subscribers.Completion.failure(_) = completion {
@@ -245,7 +245,7 @@ final class ReactiveDatabaseServiceTestCase: XCTestCase {
 		// Then
 		database
 			.readPublisher(
-				predicate: NSPredicate(format: "testValue == 2 OR testValue == 4"),
+				predicate: NSPredicate(format: "testValue == %d OR testValue == %d", 2, 4),
 				sortDescriptors: [NSSortDescriptor(key: "testValue", ascending: false)]
 			)
 			.sink { completion in
