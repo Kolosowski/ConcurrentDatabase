@@ -3,6 +3,8 @@ import RealmSwift
 
 public final actor AsyncDatabaseService {
 	
+	// MARK: - Stored Properties - Tools
+	
 	let executer: DatabaseExecuter
 	
 	// MARK: - Life Cycle
