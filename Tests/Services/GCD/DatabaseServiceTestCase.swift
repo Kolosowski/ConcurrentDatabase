@@ -300,7 +300,7 @@ final class DatabaseServiceTestCase: XCTestCase {
 	
 	func testUpdate_notExistedEntity() {
 		let updateExpectation = XCTestExpectation(description: "update")
-		database.update([UUID().uuidString]) { (_: [MockEntity]) in
+		database.update(UUID().uuidString) { (_: MockEntity) in
 			XCTFail()
 		} completion: { result in
 			if case Result.failure(_) = result {
