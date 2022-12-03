@@ -9,7 +9,6 @@ public protocol DatabaseServiceProtocol {
 		_ entity: Entity,
 		completion: @escaping (Result<Void, Error>) -> Void
 	)
-	
 	func create<Entity: Object>(
 		_ entities: [Entity],
 		completion: @escaping (Result<Void, Error>) -> Void
@@ -21,7 +20,6 @@ public protocol DatabaseServiceProtocol {
 		_ primaryKey: String,
 		completion: @escaping (Result<Entity, Error>) -> Void
 	)
-	
 	func read<Entity: Object>(
 		predicate: NSPredicate,
 		completion: @escaping (Result<Entity, Error>) -> Void
@@ -30,17 +28,14 @@ public protocol DatabaseServiceProtocol {
 	func read<Entity: Object>(
 		completion: @escaping (Result<[Entity], Error>) -> Void
 	)
-	
 	func read<Entity: Object>(
 		predicate: NSPredicate,
 		completion: @escaping (Result<[Entity], Error>) -> Void
 	)
-	
 	func read<Entity: Object>(
 		sortDescriptors: [NSSortDescriptor],
 		completion: @escaping (Result<[Entity], Error>) -> Void
 	)
-	
 	func read<Entity: Object>(
 		predicate: NSPredicate,
 		sortDescriptors: [NSSortDescriptor],
@@ -54,7 +49,6 @@ public protocol DatabaseServiceProtocol {
 		update: @escaping (Entity) -> Void,
 		completion: @escaping (Result<Void, Error>) -> Void
 	)
-	
 	func update<Entity: Object>(
 		_ primaryKeys: [String],
 		update: @escaping ([Entity]) -> Void,
@@ -67,7 +61,6 @@ public protocol DatabaseServiceProtocol {
 		_ primaryKey: String,
 		completion: @escaping (Result<Entity, Error>) -> Void
 	)
-	
 	func delete<Entity: Object>(
 		_ primaryKeys: [String],
 		completion: @escaping (Result<[Entity], Error>) -> Void

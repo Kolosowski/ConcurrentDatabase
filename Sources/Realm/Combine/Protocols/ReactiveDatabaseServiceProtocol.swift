@@ -9,7 +9,6 @@ public protocol ReactiveDatabaseServiceProtocol {
 	func createPublisher<Entity: Object>(
 		_ entity: Entity
 	) -> AnyPublisher<Void, Error>
-	
 	func createPublisher<Entity: Object>(
 		_ entities: [Entity]
 	) -> AnyPublisher<Void, Error>
@@ -19,21 +18,17 @@ public protocol ReactiveDatabaseServiceProtocol {
 	func readPublisher<Entity: Object>(
 		_ primaryKey: String
 	) -> AnyPublisher<Entity, Error>
-	
 	func readPublisher<Entity: Object>(
 		predicate: NSPredicate
 	) -> AnyPublisher<Entity, Error>
 	
 	func readPublisher<Entity: Object>() -> AnyPublisher<[Entity], Error>
-	
 	func readPublisher<Entity: Object>(
 		predicate: NSPredicate
 	) -> AnyPublisher<[Entity], Error>
-	
 	func readPublisher<Entity: Object>(
 		sortDescriptors: [NSSortDescriptor]
 	) -> AnyPublisher<[Entity], Error>
-	
 	func readPublisher<Entity: Object>(
 		predicate: NSPredicate,
 		sortDescriptors: [NSSortDescriptor]
@@ -45,7 +40,6 @@ public protocol ReactiveDatabaseServiceProtocol {
 		_ primaryKey: String,
 		update: @escaping (Entity) -> Void
 	) -> AnyPublisher<Void, Error>
-	
 	func updatePublisher<Entity: Object>(
 		_ primaryKeys: [String],
 		update: @escaping ([Entity]) -> Void
@@ -56,7 +50,6 @@ public protocol ReactiveDatabaseServiceProtocol {
 	func deletePublisher<Entity: Object>(
 		_ primaryKey: String
 	) -> AnyPublisher<Entity, Error>
-	
 	func deletePublisher<Entity: Object>(
 		_ primaryKeys: [String]
 	) -> AnyPublisher<[Entity], Error>

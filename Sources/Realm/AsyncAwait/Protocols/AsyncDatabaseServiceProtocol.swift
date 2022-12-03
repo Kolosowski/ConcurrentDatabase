@@ -8,7 +8,6 @@ public protocol AsyncDatabaseServiceProtocol {
 	func create<Entity: Object>(
 		_ entity: Entity
 	) async throws
-	
 	func create<Entity: Object>(
 		_ entities: [Entity]
 	) async throws
@@ -18,21 +17,17 @@ public protocol AsyncDatabaseServiceProtocol {
 	func read<Entity: Object>(
 		_ primaryKey: String
 	) async throws -> Entity
-	
 	func read<Entity: Object>(
 		predicate: Predicate
 	) async throws -> Entity
 	
 	func read<Entity: Object>() async throws -> [Entity]
-	
 	func read<Entity: Object>(
 		predicate: Predicate
 	) async throws -> [Entity]
-	
 	func read<Entity: Object>(
 		sortDescriptors: [SortDescriptor]
 	) async throws -> [Entity]
-	
 	func read<Entity: Object>(
 		predicate: Predicate,
 		sortDescriptors: [SortDescriptor]
@@ -44,7 +39,6 @@ public protocol AsyncDatabaseServiceProtocol {
 		_ primaryKey: String,
 		update: @escaping (Entity) -> Void
 	) async throws
-	
 	func update<Entity: Object>(
 		_ primaryKeys: [String],
 		update: @escaping ([Entity]) -> Void
@@ -56,7 +50,6 @@ public protocol AsyncDatabaseServiceProtocol {
 	func delete<Entity: Object>(
 		_ primaryKey: String
 	) async throws -> Entity
-	
 	@discardableResult
 	func delete<Entity: Object>(
 		_ primaryKeys: [String]
