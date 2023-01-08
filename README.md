@@ -1,6 +1,6 @@
-# Concurrent Persistance
+# Concurrent Persistence
 
-Concurrent persistance implementations examples. All implementations are tests covered.
+Concurrent persistence implementations examples. All implementations are tests covered.
 * GCD
 * Combine
 * Async/Await
