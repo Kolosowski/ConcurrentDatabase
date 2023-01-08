@@ -1,6 +1,6 @@
 import XCTest
 import RealmSwift
-@testable import ConcurrentDatabase
+@testable import ConcurrentPersistence
 
 final class DatabaseServiceTestCase: XCTestCase {
 	

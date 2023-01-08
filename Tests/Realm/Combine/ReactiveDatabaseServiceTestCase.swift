@@ -1,7 +1,7 @@
 import XCTest
 import Combine
 import RealmSwift
-@testable import ConcurrentDatabase
+@testable import ConcurrentPersistence
 
 final class ReactiveDatabaseServiceTestCase: XCTestCase {
 	
