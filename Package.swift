@@ -4,14 +4,14 @@
 import PackageDescription
 
 let package = Package(
-	name: "ConcurrentDatabase",
+	name: "ConcurrentPersistance",
 	platforms: [
 		.iOS(.v13)
 	],
 	products: [
 		.library(
-			name: "ConcurrentDatabase",
-			targets: ["ConcurrentDatabase"]
+			name: "ConcurrentPersistance",
+			targets: ["ConcurrentPersistance"]
 		),
 	],
 	dependencies: [
@@ -22,16 +22,16 @@ let package = Package(
 	],
 	targets: [
 		.target(
-			name: "ConcurrentDatabase",
+			name: "ConcurrentPersistance",
 			dependencies: [
 				.product(name: "RealmSwift", package: "realm-swift"),
 			],
 			path: "Sources/"
 		),
 		.testTarget(
-			name: "ConcurrentDatabaseTests",
+			name: "ConcurrentPersistanceTests",
 			dependencies: [
-				"ConcurrentDatabase"
+				"ConcurrentPersistance"
 			],
 			path: "Tests/"
 		),

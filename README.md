@@ -1,6 +1,6 @@
-# ConcurrentDatabase
+# Concurrent Persistance
 
-Concurrent database implementations examples. All implementations are tests covered.
+Concurrent persistance implementations examples. All implementations are tests covered.
 * GCD
 * Combine
 * Async/Await
